@@ -22,7 +22,7 @@ package com.origamilabs.library.views;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import com.dodola.waterex.R;
+import com.madevil.gallery.R;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -189,13 +189,13 @@ public class StaggeredGridView extends ViewGroup {
 	 * The item id of the currently selected item.
 	 */
 	long mSelectedRowId = INVALID_ROW_ID;
-	/** ÔªËØÖ®¼äµÄÉÏ±ß¾à */
+	/** Ôªï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½Ï±ß¾ï¿½ */
 	private int mItemTopMargin;
-	/** ÔªËØÖ®¼äµÄÏÂ±ß¾à */
+	/** Ôªï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½Â±ß¾ï¿½ */
 	private int mItemBottomMargin;
-	/** ÔªËØÖ®¼äµÄ×ó±ß¾à */
+	/** Ôªï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½ï¿½ß¾ï¿½ */
 	private int mItemLeftMargin;
-	/** ÔªËØÖ®¼äµÄÓÒ±ß¾à */
+	/** Ôªï¿½ï¿½Ö®ï¿½ï¿½ï¿½ï¿½Ò±ß¾ï¿½ */
 	private int mItemRightMargin;
 
 	private int mLastScrollState = OnScrollListener.SCROLL_STATE_IDLE;
@@ -618,16 +618,16 @@ public class StaggeredGridView extends ViewGroup {
 	}
 
 	/**
-	 * ÉèÖÃÔªËØÖ®¼äµÄ¼ä¾à
+	 * ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½Ö®ï¿½ï¿½Ä¼ï¿½ï¿½
 	 *
 	 * @param left
-	 *            ×ó¼ä¾à
+	 *            ï¿½ï¿½ï¿½ï¿½
 	 * @param top
-	 *            ÉÏ¼ä¾à
+	 *            ï¿½Ï¼ï¿½ï¿½
 	 * @param right
-	 *            ÓÒ¼ä¾à
+	 *            ï¿½Ò¼ï¿½ï¿½
 	 * @param bottom
-	 *            ÏÂ¼ä¾à
+	 *            ï¿½Â¼ï¿½ï¿½
 	 */
 	public void setItemMargin(int left, int top, int right, int bottom) {
 		final boolean needsPopulate = (left != mItemLeftMargin)
@@ -643,7 +643,7 @@ public class StaggeredGridView extends ViewGroup {
 	}
 
 	/**
-	 * ÉèÖÃÔªËØÖ®¼äµÄ¼ä¾à
+	 * ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½Ö®ï¿½ï¿½Ä¼ï¿½ï¿½
 	 *
 	 * @param margin
 	 */
@@ -1078,7 +1078,7 @@ public class StaggeredGridView extends ViewGroup {
 			mSelectorRect.setEmpty();
 		}
 		invokeOnItemScrollListener();
-		// ÏÔÊ¾scrollbar
+		// ï¿½ï¿½Ê¾scrollbar
 		if (!awakenScrollBars()) {
 			invalidate();
 		}

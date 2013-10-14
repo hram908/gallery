@@ -16,7 +16,7 @@
 
 package com.origamilabs.library.views;
 
-import com.dodola.waterex.R;
+import com.madevil.gallery.R;
 
 import android.content.Context;
 import android.content.res.ColorStateList;
@@ -136,7 +136,7 @@ class FastScroller {
         final Resources res = context.getResources();
         useThumbDrawable(context, res.getDrawable(R.drawable.scrollbar_handle_accelerated_anim2));
 
-        mOverlayDrawable = res.getDrawable(R.drawable.empty_photo);//TODO:±³¾°Í¼Æ¬
+        mOverlayDrawable = res.getDrawable(R.drawable.empty_photo);//TODO:ï¿½ï¿½ï¿½ï¿½Í¼Æ¬
 
         mScrollCompleted = true;
 

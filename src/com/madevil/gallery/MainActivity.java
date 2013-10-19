@@ -34,8 +34,6 @@ import com.madevil.gallery.R;
 import com.madevil.gallery.PictureAdapter.ViewHolder;
 import com.madevil.gallery.model.DataPicture;
 import com.madevil.gallery.model.G;
-import com.madevil.util.Helper;
-import com.madevil.util.ImageFetcher;
 import com.origamilabs.library.views.StaggeredGridView;
 import com.squareup.picasso.Picasso;
 

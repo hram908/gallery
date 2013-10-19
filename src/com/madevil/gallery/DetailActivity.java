@@ -13,8 +13,6 @@ import com.madevil.gallery.model.DataPicture;
 import com.madevil.gallery.model.DataUser;
 import com.madevil.gallery.model.G;
 import com.madevil.gallery.R;
-import com.madevil.util.Helper;
-import com.madevil.util.ImageFetcher;
 import com.squareup.picasso.Picasso;
 
 import android.os.AsyncTask;

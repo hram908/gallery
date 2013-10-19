@@ -1,7 +1,10 @@
 package com.madevil.gallery.model;
 
-public class Globals {
-    public static final String HOST = "http://nitui.tk:8000";
+import com.loopj.android.http.AsyncHttpClient;
+
+public class G {
+    public static final String HOST = "http://talebook.org:8000";
+    public static AsyncHttpClient http = new AsyncHttpClient();
 
     public static class Url {
 	public static String getIndexByNew(int page_id) {
@@ -23,6 +26,7 @@ public class Globals {
 	public static String getUserAvatar(String user) {
 	    return HOST + "/avatar/" + user;
 	}
+
     }
 
 }

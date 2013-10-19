@@ -10,7 +10,7 @@ import com.madevil.gallery.R;
 import com.madevil.gallery.PictureAdapter.ViewHolder;
 import com.madevil.gallery.model.DataPicture;
 import com.madevil.gallery.model.DataUser;
-import com.madevil.gallery.model.Globals;
+import com.madevil.gallery.model.G;
 import com.madevil.util.Helper;
 import com.madevil.util.ImageFetcher;
 import com.origamilabs.library.views.StaggeredGridView;
@@ -84,7 +84,7 @@ class CommentAdapter extends BaseAdapter {
 		    .findViewById(R.id.component_comment_avatar);
 	    holder.contentView = (TextView) view
 		    .findViewById(R.id.component_comment_content);
-	    holder.avatarView.setTag((Integer)index);
+	    holder.avatarView.setTag((Integer) index);
 	    holder.avatarView.setOnClickListener(new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
@@ -102,7 +102,7 @@ class CommentAdapter extends BaseAdapter {
 	DataComment comment = mComments.get(index);
 	ViewHolder holder = (ViewHolder) view.getTag();
 	holder.contentView.setText(comment.content);
-	String avatar_url = Globals.Url.getUserAvatar(comment.user);
+	String avatar_url = G.Url.getUserAvatar(comment.user);
 	Picasso.with(mContext).load(avatar_url).into(holder.avatarView);
 	return view;
     }
@@ -120,9 +120,20 @@ public class CommentActivity extends Activity {
 	mListView = (ListView) this.findViewById(R.id.comment_view_list);
 	mListView.setAdapter(mAdapter);
 	mAdapter.notifyDataSetChanged();
-	TaskGetComments task = new TaskGetComments();
-	String pid = "";
-	task.execute(pid);
+
+	LinkedList<DataComment> mComments = new LinkedList<DataComment>();
+	DataComment d = new DataComment();
+	d.id = "1";
+	d.user = "rexliao";
+	d.content = "楼主太赞了！！！之前我就喜欢这个图啊！！！";
+	mComments.add(d);
+	d.id = "2";
+	d.user = "rexliao";
+	d.content = "顶\n用力顶！\n顶到天！";
+	mComments.add(d);
+
+	mAdapter.addItems(mComments);
+	mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -130,38 +141,6 @@ public class CommentActivity extends Activity {
 	// Inflate the menu; this adds items to the action bar if it is present.
 	getMenuInflater().inflate(R.menu.activity_comment, menu);
 	return true;
-    }
-
-    private class TaskGetComments extends AsyncTask<String, Integer, Integer> {
-	private int ecode = 0;
-	private String msg = "";
-	LinkedList<DataComment> mComments;
-
-	@Override
-	protected void onPostExecute(Integer result) {
-	    if (ecode == 0) {
-		mAdapter.addItems(mComments);
-		mAdapter.notifyDataSetChanged();
-		return;
-	    }
-	    Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT).show();
-	}
-
-	@Override
-	protected Integer doInBackground(String... params) {
-	    mComments = new LinkedList<DataComment>();
-	    DataComment d = new DataComment();
-	    d.id = "1";
-	    d.user = "rexliao";
-	    d.content = "楼主太赞了！！！之前我就喜欢这个图啊！！！";
-	    mComments.add(d);
-	    d.id = "2";
-	    d.user = "rexliao";
-	    d.content = "顶\n用力顶！\n顶到天！";
-	    mComments.add(d);
-	    ecode = 0;
-	    return ecode;
-	}
     }
 
 }

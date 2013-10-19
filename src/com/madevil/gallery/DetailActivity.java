@@ -8,9 +8,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.madevil.gallery.model.DataPicture;
 import com.madevil.gallery.model.DataUser;
-import com.madevil.gallery.model.Globals;
+import com.madevil.gallery.model.G;
 import com.madevil.gallery.R;
 import com.madevil.util.Helper;
 import com.madevil.util.ImageFetcher;
@@ -57,10 +58,47 @@ public class DetailActivity extends Activity {
 	buttonDownload
 		.setText(String.format("%s", picture.getDownloadNumber()));
 
-	String url = Globals.Url.getPictureDetail(picture.getId());
-	TaskGetDetail task = new TaskGetDetail();
-	task.execute(url);
-	Log.i("DetailActivity", "url: " + url);
+	String url = G.Url.getPictureDetail(picture.getId());
+	Log.i("DetailActivity.http", "url: " + url);
+	G.http.get(url, new JsonHttpResponseHandler() {
+	    @Override
+	    public void onSuccess(JSONObject json_root) {
+		List<DataPicture> items = new ArrayList<DataPicture>();
+
+		Log.d("DetailActivity.http", "json:" + json_root);
+		try {
+		    int ecode = json_root.getInt("ecode");
+		    if (ecode != 0 ) {
+			String msg = "" + ecode + "."
+				+ json_root.optString("msg", "系统繁忙，请休息一下再来～");
+			Toast.makeText(getApplication(), msg,
+				Toast.LENGTH_SHORT).show();
+			return;
+		    }
+		    JSONObject obj = json_root; // FIXME .getJSONObject("data");
+		    mUserLiked = obj.optBoolean("liked", false);
+		    mUserCommented = obj.optBoolean("commented", false);
+		    mUserDownloaded = obj.optBoolean("downloaded", false);
+		    mUser.setId(json_root.getString("owner"));
+		    Log.d("DetailActivity", "uesr_id=" + mUser.getId());
+		} catch (Exception e) {
+		    Log.e("DetailActivity.http", "exception:" + e.toString());
+		    String msg = "服务器返回的数据无效";
+		    Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT)
+			    .show();
+		}
+	    }
+
+	    @Override
+	    public void onFailure(Throwable e, String response) {
+		Log.e("MianActivity.http", "Exception: " + e.toString());
+		e.printStackTrace();
+		String msg = "服务器出错";
+		Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT)
+			.show();
+	    }
+
+	});
 
     }
 
@@ -98,68 +136,4 @@ public class DetailActivity extends Activity {
 	intent.putExtra(DataUser.intentTag, mUser.getId());
 	this.startActivity(intent);
     }
-
-    private class TaskGetDetail extends AsyncTask<String, Integer, Integer> {
-	private int ecode = 0;
-	private String msg = "";
-
-	@Override
-	protected void onPostExecute(Integer result) {
-	    if (ecode != 0) {
-		Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT)
-			.show();
-	    }
-	}
-
-	@Override
-	protected Integer doInBackground(String... params) {
-	    String url = params[0];
-	    String json = "";
-	    if (Helper.checkConnection(DetailActivity.this)) {
-		try {
-		    json = Helper.getStringFromUrl(url);
-
-		} catch (IOException e) {
-		    Log.e("IOException is : ", e.toString());
-		    e.printStackTrace();
-		    ecode = 1;
-		    msg = "连接图片服务器失败！请休息一下再来～";
-		    return ecode;
-		}
-	    }
-	    Log.d("DetailActiivty", "picture info json:" + json);
-
-	    if (json == null) {
-		ecode = 2;
-		msg = "图片服务器返回的数据为空！请休息一下再来～";
-		return ecode;
-	    }
-
-	    try {
-		JSONObject json_root = new JSONObject(json);
-		ecode = json_root.getInt("ecode");
-		if (ecode != 0 || json_root.isNull("data")) {
-		    msg = "" + ecode + "."
-			    + json_root.optString("msg", "系统繁忙，请休息一下再来～");
-		    return ecode;
-		}
-		JSONObject obj = json_root.getJSONObject("data");
-		mUserLiked = obj.optBoolean("liked", false);
-		mUserCommented = obj.optBoolean("commented", false);
-		mUserDownloaded = obj.optBoolean("downloaded", false);
-		mUser.setId(json_root.getString("owner"));
-		Log.d("DetailActivity", "uesr_id=" + mUser.getId());
-	    } catch (Exception e) {
-		e.printStackTrace();
-		ecode = 3;
-		msg = "图片服务器返回的数据出错！请休息一下再来～";
-		return ecode;
-	    }
-	    return 0;
-	}
-    }
-
-    private void FailMsg(String msg) {
-    }
-
 }

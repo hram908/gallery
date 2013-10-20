@@ -9,7 +9,7 @@
         android:layout_height="wrap_content" >
 
         <ImageView
-            android:id="@+id/imageView1"
+            android:id="@+id/login_btn_qq2"
             android:layout_width="32dp"
             android:layout_height="32dp"
             android:src="@drawable/default_avatar" />

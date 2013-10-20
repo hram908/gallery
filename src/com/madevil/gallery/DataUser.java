@@ -13,6 +13,7 @@ public class DataUser implements Serializable {
 	public String id = "";
 	public String nick = "";
 	public String intro = "";
+	public String avatar = "";
 	public int pictureNumber = 0;
 	public int moneyNumber = 0;
 }

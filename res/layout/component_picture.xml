@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:scaleType="centerCrop"
         android:src="@null" />
-
+<!--
     <TextView
         android:id="@+id/news_title"
         android:layout_width="wrap_content"
@@ -27,5 +27,5 @@
         android:layout_gravity="right|bottom"
         android:gravity="right"
         android:textColor="#9f9f9f" />
-
+-->
 </LinearLayout>

@@ -63,7 +63,7 @@ class PictureAdapter extends BaseAdapter {
 	    ViewHolder holder = new ViewHolder();
 	    holder.index = index;
 	    holder.imageView = (ImageView) view.findViewById(R.id.news_pic);
-	    holder.contentView = (TextView) view.findViewById(R.id.news_title);
+	    //holder.contentView = (TextView) view.findViewById(R.id.news_title);
 	    view.setTag(holder);
 	    view.setOnClickListener(new View.OnClickListener() {
 		@Override
@@ -84,7 +84,7 @@ class PictureAdapter extends BaseAdapter {
 	ViewHolder holder = (ViewHolder) view.getTag();
 	holder.imageView.setLayoutParams(new LinearLayout.LayoutParams(width,
 		height));
-	holder.contentView.setText(picture.getTitle());
+	//holder.contentView.setText(picture.getTitle());
 	Context c = parent.getContext();
 	Picasso.with(c).load(picture.getUrl()).into(holder.imageView);
 	return view;

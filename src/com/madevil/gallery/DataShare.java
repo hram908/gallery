@@ -22,7 +22,7 @@ public class DataShare implements Serializable {
      * data for tencent open api
      */
     public Tencent tencent = null;
-    public String login_msg = "";
+    public String login_info = "";
 
     /*
      * data for http request

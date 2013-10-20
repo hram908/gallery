@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageView;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -32,7 +33,7 @@ import com.tencent.tauth.UiError;
 public class FragmentMyself extends Fragment {
     private Context mContext;
     private TextView mMsg;
-    private Button mButtonLoginQQ = null;
+    private ImageView mButtonLoginQQ = null;
     private DataShare share = null;
 
     /*
@@ -40,7 +41,7 @@ public class FragmentMyself extends Fragment {
      */
     public void LoginUser() {
 	RequestParams params = new RequestParams();
-	params.put("login_msg", share.login_msg);
+	params.put("login_info", share.login_info);
 
 	BasicClientCookie cookie = new BasicClientCookie("user",
 		share.user.id);
@@ -56,6 +57,18 @@ public class FragmentMyself extends Fragment {
 		    share.isLogin = false;
 		    Toast.makeText(getActivity(), M.emsg(json_root),
 			    Toast.LENGTH_SHORT).show();
+		    return;
+		}
+		try {
+		    JSONObject json_data = json_root.getJSONObject("data");
+		    share.user.nick = json_data.getString("nick");
+		    share.user.avatar = json_data.getString("avatar");
+		} catch (Exception e) {
+		    share.isLogin = false;
+		    String msg = "服务器数据错误，请重试登陆";
+		    Toast.makeText(getActivity(), msg,
+			    Toast.LENGTH_SHORT).show();
+		    return;
 		}
 	    }
 
@@ -87,10 +100,10 @@ public class FragmentMyself extends Fragment {
 			mMsg.setText(result.toString());
 			try {
 			    share.user.id = "qq_" + result.getString("openid");
-			    share.login_msg = result.toString();
+			    share.login_info = result.toString();
 			    share.isLogin = true;
 			    Log.d("Data", "tencent_login_msg="
-				    + share.login_msg);
+				    + share.login_info);
 			} catch (Exception e) {
 			    e.printStackTrace();
 			    Log.e("http.qq", "qq login fail, result=" + result);
@@ -114,12 +127,12 @@ public class FragmentMyself extends Fragment {
 	    Bundle savedInstanceState) {
 	mContext = this.getActivity().getApplication();
 	share = DataShare.Ins(mContext);
-	Log.d("DataShare", "login_msg=" + share.login_msg);
+	Log.d("DataShare", "login_msg=" + share.login_info);
 	if (!share.isLogin) {
 	    View view = inflater.inflate(R.layout.fragment_login, container,
 		    false);
 	    mMsg = (TextView) view.findViewById(R.id.login_text_msg);
-	    mButtonLoginQQ = (Button) view.findViewById(R.id.login_btn_qq);
+	    mButtonLoginQQ = (ImageView) view.findViewById(R.id.login_btn_qq);
 	    mButtonLoginQQ.setOnClickListener(new OnClickListener() {
 		@Override
 		public void onClick(View arg0) {

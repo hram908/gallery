@@ -57,6 +57,16 @@ public class ActivityMain extends FragmentActivity {
     private Button mButtonIndex, mButtonFeeds, mButtonMyself;
     private DataShare share = null;
 
+    /*
+    protected void onSaveInstanceState (Bundle outState) {
+	outState.putSerializable("DataShare", DataShare.Ins(getApplicationContext()));
+    }
+    protected void onRestoreInstanceState (Bundle savedInstanceState) {
+	DataShare share = DataShare.Ins(getApplicationContext());
+	share = (DataShare) savedInstanceState.getSerializable("DataShare");
+    }
+    */
+
     void UpdateNavigate() {
 	Boolean[] values = new Boolean[3];
 	Arrays.fill(values, false);
@@ -102,13 +112,17 @@ public class ActivityMain extends FragmentActivity {
 	    }
 	});
 	mButtonIndex.setPressed(true);
-
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 	getMenuInflater().inflate(R.menu.activity_main, menu);
 	return true;
+    }
+
+    protected void onResume() {
+	super.onResume();
+	UpdateNavigate();
     }
 
 }

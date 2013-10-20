@@ -5,18 +5,39 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <Button
-        android:id="@+id/login_btn_qq"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="使用QQ登陆" />
+        android:orientation="vertical"
+        android:paddingTop="96dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center" >
+
+            <ImageView
+                android:id="@+id/login_btn_qq"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:src="@drawable/image_login_qq" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/TextView01"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="\n\n--------\n登陆后，您能够\n发表评论\n上传图片\n查看更多高清大图"
+        android:textColor="#FFBB33" />
 
     <TextView
         android:id="@+id/login_text_msg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:ems="10">
-    </TextView>
+        android:ems="10" />
 
 </LinearLayout>

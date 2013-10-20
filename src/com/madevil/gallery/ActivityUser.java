@@ -143,8 +143,8 @@ public class ActivityUser extends Activity {
 
 	// 读取用户信息
 	Intent intent = getIntent();
-	mUser.setId(intent.getStringExtra(DataUser.intentTag));
-	Log.d("UserActivity", "user: " + mUser.getId());
+	mUser.id = intent.getStringExtra(DataUser.intentTag);
+	Log.d("UserActivity", "user: " + mUser.id);
 
 	// 构造图片转换器
 	mUserPictureAdapter = new UserPictureAdapter(this);
@@ -163,7 +163,7 @@ public class ActivityUser extends Activity {
 
 	// 异步发起读取用户信息的操作
 	// do request
-	String url = G.Url.getUser(mUser.getId(), 0);
+	String url = G.Url.getUser(mUser.id, 0);
 	Log.d("UserActivity.http", "url=" + url);
 	G.http.get(url, new JsonHttpResponseHandler() {
 	    @Override
@@ -179,13 +179,10 @@ public class ActivityUser extends Activity {
 			return;
 		    }
 		    JSONObject json_data = json_root.getJSONObject("data");
-		    mUser.setNick(json_data.optString("nick")
-			    .replace("rexliao", "tyler")
-			    .replace("rex", "tyler")
-			    .replace("talebook", "tyler"));
-		    mUser.setIntro(json_data.optString("intro", ""));
-		    mUser.setMoneyNumber(json_data.optInt("money", 0));
-		    mUser.setPictureNumber(json_data.optInt("pic_num", 0));
+		    mUser.nick = json_data.optString("nick");
+		    mUser.intro = json_data.optString("intro", "");
+		    mUser.moneyNumber = json_data.optInt("money", 0);
+		    mUser.pictureNumber = json_data.optInt("pic_num", 0);
 
 		    JSONArray json_pics = json_data.getJSONArray("pics");
 		    for (int i = 0; i < json_pics.length(); i++) {
@@ -210,10 +207,10 @@ public class ActivityUser extends Activity {
 		}
 		mUserPictureAdapter.addItems(mPictures);
 		mUserPictureAdapter.notifyDataSetChanged();
-		mTextNick.setText(mUser.getNick());
-		mTextIntro.setText(mUser.getIntro());
-		mButtonMoney.setText("" + mUser.getMoneyNumber());
-		mButtonPicture.setText("" + mUser.getPictureNumber());
+		mTextNick.setText(mUser.nick);
+		mTextIntro.setText(mUser.intro);
+		mButtonMoney.setText("" + mUser.moneyNumber);
+		mButtonPicture.setText("" + mUser.pictureNumber);
 
 		mUserPictureAdapter.addItems(mPictures);
 		mUserPictureAdapter.notifyDataSetChanged();

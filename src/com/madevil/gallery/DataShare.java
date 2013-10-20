@@ -42,9 +42,9 @@ public class DataShare implements Serializable {
 	    TelephonyManager telephonyManager = (TelephonyManager) c
 		    .getSystemService(Context.TELEPHONY_SERVICE);
 	    String imei = telephonyManager.getDeviceId();
-	    user.setId("imei_" + imei);
+	    user.id = "imei_" + imei;
 	} catch (Exception e) {
-	    user.setId("guest");
+	    user.id = "guest";
 	}
     }
 

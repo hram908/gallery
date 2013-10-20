@@ -74,8 +74,8 @@ public class ActivityDetail extends Activity {
 		    mUserLiked = obj.optBoolean("liked", false);
 		    mUserCommented = obj.optBoolean("commented", false);
 		    mUserDownloaded = obj.optBoolean("downloaded", false);
-		    mUser.setId(json_root.getString("owner"));
-		    Log.d("DetailActivity", "uesr_id=" + mUser.getId());
+		    mUser.id = json_root.getString("owner");
+		    Log.d("DetailActivity", "uesr_id=" + mUser.id);
 		} catch (Exception e) {
 		    Log.e("DetailActivity.http", "exception:" + e.toString());
 		    String msg = "服务器返回的数据无效";
@@ -170,7 +170,7 @@ public class ActivityDetail extends Activity {
 
     public void onClick_detail_btn_avatar(View v) {
 	Intent intent = new Intent(getApplication(), ActivityUser.class);
-	intent.putExtra(DataUser.intentTag, mUser.getId());
+	intent.putExtra(DataUser.intentTag, mUser.id);
 	this.startActivity(intent);
     }
 }

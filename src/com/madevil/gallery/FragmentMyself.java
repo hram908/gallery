@@ -43,7 +43,7 @@ public class FragmentMyself extends Fragment {
 	params.put("login_msg", share.login_msg);
 
 	BasicClientCookie cookie = new BasicClientCookie("user",
-		share.user.getId());
+		share.user.id);
 	share.http_cookies.addCookie(cookie);
 	G.http.setCookieStore(share.http_cookies);
 
@@ -86,7 +86,7 @@ public class FragmentMyself extends Fragment {
 			Log.d("Login", "onComplete");
 			mMsg.setText(result.toString());
 			try {
-			    share.user.setId("qq_" + result.getString("openid"));
+			    share.user.id = "qq_" + result.getString("openid");
 			    share.login_msg = result.toString();
 			    share.isLogin = true;
 			    Log.d("Data", "tencent_login_msg="
@@ -131,7 +131,7 @@ public class FragmentMyself extends Fragment {
 	View view = inflater
 		.inflate(R.layout.fragment_myself, container, false);
 	TextView nick = (TextView)view.findViewById(R.id.myself_text_nick);
-	nick.setText(share.user.getId());
+	nick.setText(share.user.id);
 	return view;
     }
 

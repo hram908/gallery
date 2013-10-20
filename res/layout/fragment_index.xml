@@ -1,0 +1,19 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:staggered="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_index"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <com.origamilabs.library.views.StaggeredGridView
+        android:id="@+id/fragment_index_grid"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbarFadeDuration="1000"
+        android:scrollbars="vertical"
+        staggered:drawSelectorOnTop="true"
+        staggered:numColumns="2" >
+    </com.origamilabs.library.views.StaggeredGridView>
+
+</LinearLayout>

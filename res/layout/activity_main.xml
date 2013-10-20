@@ -1,52 +1,52 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    xmlns:staggered="http://schemas.android.com/apk/res-auto"
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".MainActivity" >
+    android:layout_height="match_parent" >
 
     <LinearLayout
+        android:id="@+id/main_layout_navigate"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
         android:background="@drawable/layout_light_down"
         android:gravity="center" >
 
         <Button
-            android:id="@+id/main_btn_view_new"
-            style="?android:attr/buttonStyleSmall"
+            android:id="@+id/main_btn_index"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="New" />
+            android:drawableLeft="@drawable/button_like"
+            android:text="浏览" />
 
         <Button
-            android:id="@+id/main_btn_view_hot"
+            android:id="@+id/main_btn_feeds"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hot" />
+            android:drawableLeft="@drawable/button_comment"
+            android:text="发现" />
 
         <Button
-            android:id="@+id/main_btn_view_me"
+            android:id="@+id/main_btn_myself"
+            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Me" />
+            android:drawableLeft="@drawable/button_like"
+            android:text="我" />
+
     </LinearLayout>
 
-    <RelativeLayout
-        android:id="@+id/main_view_background"
+    <android.support.v4.view.ViewPager
+        android:id="@+id/main_layout_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="48dp"
+        android:gravity="center"
+        android:orientation="vertical" >
+    </android.support.v4.view.ViewPager>
 
-        <com.origamilabs.library.views.StaggeredGridView
-            android:id="@+id/main_view_staggered_grid"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:scrollbarFadeDuration="1000"
-            android:scrollbars="vertical"
-            staggered:drawSelectorOnTop="true"
-            staggered:numColumns="2" >
-        </com.origamilabs.library.views.StaggeredGridView>
-    </RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>

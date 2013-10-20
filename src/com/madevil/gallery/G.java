@@ -1,9 +1,9 @@
-package com.madevil.gallery.model;
+package com.madevil.gallery;
 
 import com.loopj.android.http.AsyncHttpClient;
 
 public class G {
-    public static final String HOST = "http://talebook.org:8000";
+    public static final String HOST = "http://174.140.168.22:8000";
     public static AsyncHttpClient http = new AsyncHttpClient();
 
     public static class Url {

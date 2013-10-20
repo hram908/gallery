@@ -5,7 +5,7 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="13"
+        android:minSdkVersion="8"
         android:targetSdkVersion="18" />
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -17,11 +17,10 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
+        android:theme="@android:style/Theme.Light.NoTitleBar" >
         <activity
             android:name="com.madevil.gallery.MainActivity"
-            android:label="@string/app_name"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -30,8 +29,7 @@
         </activity>
         <activity
             android:name="com.madevil.gallery.DetailActivity"
-            android:label="@string/title_activity_detail"
-            android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
+            android:label="@string/title_activity_detail" >
         </activity>
         <activity
             android:name="com.madevil.gallery.UserActivity"

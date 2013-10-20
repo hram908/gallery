@@ -9,9 +9,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.madevil.gallery.model.DataPicture;
-import com.madevil.gallery.model.DataUser;
-import com.madevil.gallery.model.G;
 import com.madevil.gallery.R;
 import com.squareup.picasso.Picasso;
 

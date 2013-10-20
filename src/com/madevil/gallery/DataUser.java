@@ -1,4 +1,4 @@
-package com.madevil.gallery.model;
+package com.madevil.gallery;
 
 import java.io.Serializable;
 

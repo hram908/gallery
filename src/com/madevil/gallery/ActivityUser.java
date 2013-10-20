@@ -109,7 +109,7 @@ class UserPictureAdapter extends BaseAdapter {
 		public void onClick(View v) {
 		    ViewHolder holder = (ViewHolder) v.getTag();
 		    DataPicture picture = mPictures.get(holder.index);
-		    Intent intent = new Intent(mContext, DetailActivity.class);
+		    Intent intent = new Intent(mContext, ActivityDetail.class);
 		    intent.putExtra(DataPicture.intentTag, picture);
 		    mContext.startActivity(intent);
 		}
@@ -127,7 +127,7 @@ class UserPictureAdapter extends BaseAdapter {
     }
 }
 
-public class UserActivity extends Activity {
+public class ActivityUser extends Activity {
     private DataUser mUser = new DataUser();
     private UserPictureAdapter mUserPictureAdapter = null;
     private GridView mGridView = null;
@@ -172,11 +172,9 @@ public class UserActivity extends Activity {
 
 		Log.d("MainActivity.http", "json:" + json_root);
 		try {
-		    int ecode = json_root.getInt("ecode");
-		    if (ecode != 0 || json_root.isNull("data")) {
-			String msg = "" + ecode + "."
-				+ json_root.optString("msg", "系统繁忙，请休息一下再来～");
-			Toast.makeText(getApplication(), msg,
+		    int ecode = M.ecode(json_root);
+		    if ( ecode != 0 ) {
+			Toast.makeText(getApplication(), M.emsg(json_root),
 				Toast.LENGTH_SHORT).show();
 			return;
 		    }

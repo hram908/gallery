@@ -5,4 +5,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <TextView
+        android:id="@+id/myself_text_nick"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="nick"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
 </LinearLayout>

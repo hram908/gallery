@@ -13,28 +13,28 @@
         android:gravity="center" >
 
         <Button
-            android:id="@+id/main_btn_index"
-            style="?android:attr/borderlessButtonStyle"
+            android:id="@+id/main_btn_feeds"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/button_like"
+            android:layout_height="48dp"
+            android:background="@drawable/button_navigate"
+            android:padding="16dp"
+            android:text="动态" />
+
+        <Button
+            android:id="@+id/main_btn_index"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:background="@drawable/button_navigate"
+            android:padding="16dp"
             android:text="浏览" />
 
         <Button
-            android:id="@+id/main_btn_feeds"
-            style="?android:attr/borderlessButtonStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/button_comment"
-            android:text="发现" />
-
-        <Button
             android:id="@+id/main_btn_myself"
-            style="?android:attr/borderlessButtonStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/button_like"
-            android:text="我" />
+            android:layout_height="48dp"
+            android:background="@drawable/button_navigate"
+            android:padding="16dp"
+            android:text="我的" />
 
     </LinearLayout>
 
@@ -48,5 +48,14 @@
         android:gravity="center"
         android:orientation="vertical" >
     </android.support.v4.view.ViewPager>
+
+    <TabWidget
+        android:id="@android:id/tabs"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@+id/main_layout_pager"
+        android:layout_marginTop="55dp" >
+    </TabWidget>
 
 </RelativeLayout>

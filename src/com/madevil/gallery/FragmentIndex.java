@@ -71,7 +71,7 @@ class PictureAdapter extends BaseAdapter {
 		    v.getContext();
 		    ViewHolder holder = (ViewHolder) v.getTag();
 		    DataPicture picture = mPictures.get(holder.index);
-		    Intent intent = new Intent(v.getContext(), DetailActivity.class);
+		    Intent intent = new Intent(v.getContext(), ActivityDetail.class);
 		    intent.putExtra(DataPicture.intentTag, picture);
 		    v.getContext().startActivity(intent);
 		}

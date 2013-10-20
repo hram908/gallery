@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_INTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -19,8 +20,10 @@
         android:label="@string/app_name"
         android:theme="@android:style/Theme.Light.NoTitleBar" >
         <activity
-            android:name="com.madevil.gallery.MainActivity"
-            android:label="@string/app_name">
+            android:name="com.madevil.gallery.ActivityMain"
+            android:label="@string/app_name"
+            android:launchMode="standard"
+            android:noHistory="false" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,16 +31,29 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.madevil.gallery.DetailActivity"
+            android:name="com.madevil.gallery.ActivityDetail"
             android:label="@string/title_activity_detail" >
         </activity>
         <activity
-            android:name="com.madevil.gallery.UserActivity"
+            android:name="com.madevil.gallery.ActivityUser"
             android:label="@string/title_activity_user" >
         </activity>
         <activity
-            android:name="com.madevil.gallery.CommentActivity"
+            android:name="com.madevil.gallery.ActivityComment"
             android:label="@string/title_activity_comment" >
+        </activity>
+        <activity
+            android:name="com.tencent.tauth.AuthActivity"
+            android:launchMode="singleTask"
+            android:noHistory="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="tencent222222" /> <!-- 100380359 100381104 222222 -->
+            </intent-filter>
         </activity>
     </application>
 

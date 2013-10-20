@@ -27,6 +27,18 @@ public class G {
 	    return HOST + "/avatar/" + user;
 	}
 
+	public static String getLogin() {
+	    return HOST + "/login";
+	}
     }
+
+    public static final String TENCENT_APIS = "get_user_info,get_simple_userinfo";
+    public static final String TENCENT_APPID = "222222";
+    // private static final String APP_ID = "222222";		// qq-sdk test id
+    // private static final String APP_ID = "100363349";	// qq-sdk unknown id
+
+
+    public static final int ECODE = 1314;
+    public static final String EMSG = "服务器烧坏了，请稍后重试";
 
 }

@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
 import com.madevil.gallery.R;
 import com.squareup.picasso.Picasso;
 
@@ -26,11 +27,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class DetailActivity extends Activity {
+public class ActivityDetail extends Activity {
     private DataUser mUser = new DataUser();
     private Boolean mUserLiked = false;
     private Boolean mUserCommented = false;
     private Boolean mUserDownloaded = false;
+    private DataPicture mPicture = null;
+    private Button mButtonLike, mButtonComment, mButtonDownload;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,32 +41,29 @@ public class DetailActivity extends Activity {
 	setContentView(R.layout.activity_detail);
 
 	Intent intent = getIntent();
-	DataPicture picture = (DataPicture) intent
+	mPicture = (DataPicture) intent
 		.getSerializableExtra(DataPicture.intentTag);
-	Picasso.with(getApplication()).load(picture.getUrl())
+	Picasso.with(getApplication()).load(mPicture.getUrl())
 		.into((ImageView) this.findViewById(R.id.detail_image));
 
-	Button buttonLike = (Button) this.findViewById(R.id.detail_btn_like);
-	Button buttonComment = (Button) this
-		.findViewById(R.id.detail_btn_comment);
-	Button buttonDownload = (Button) this
-		.findViewById(R.id.detail_btn_download);
-	buttonLike.setText(String.format("%s", picture.getLikeNumber()));
-	buttonComment.setText(String.format("%s", picture.getCommentNumber()));
-	buttonDownload
-		.setText(String.format("%s", picture.getDownloadNumber()));
+	mButtonLike = (Button) this.findViewById(R.id.detail_btn_like);
+	mButtonComment = (Button) this.findViewById(R.id.detail_btn_comment);
+	mButtonDownload = (Button) this.findViewById(R.id.detail_btn_download);
+	mButtonLike.setText(String.format("%s", mPicture.getLikeNumber()));
+	mButtonComment
+		.setText(String.format("%s", mPicture.getCommentNumber()));
+	mButtonDownload.setText(String.format("%s",
+		mPicture.getDownloadNumber()));
 
-	String url = G.Url.getPictureDetail(picture.getId());
+	String url = G.Url.getPictureDetail(mPicture.getId());
 	Log.i("DetailActivity.http", "url: " + url);
 	G.http.get(url, new JsonHttpResponseHandler() {
 	    @Override
 	    public void onSuccess(JSONObject json_root) {
-		List<DataPicture> items = new ArrayList<DataPicture>();
-
 		Log.d("DetailActivity.http", "json:" + json_root);
 		try {
 		    int ecode = json_root.getInt("ecode");
-		    if (ecode != 0 ) {
+		    if (ecode != 0) {
 			String msg = "" + ecode + "."
 				+ json_root.optString("msg", "系统繁忙，请休息一下再来～");
 			Toast.makeText(getApplication(), msg,
@@ -82,6 +82,10 @@ public class DetailActivity extends Activity {
 		    Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT)
 			    .show();
 		}
+		mButtonLike.setPressed(mUserLiked);
+		mButtonComment.setPressed(mUserCommented);
+		mButtonDownload.setPressed(mUserDownloaded);
+
 	    }
 
 	    @Override
@@ -109,9 +113,47 @@ public class DetailActivity extends Activity {
     }
 
     public void onClick_detail_btn_like(View v) {
+	String url = G.Url.getPictureDetail(mPicture.getId());
+	// do request
+	RequestParams params = new RequestParams();
 	if (mUserLiked) {
-	    // cancel like
+	    params.put("like", "0");
+	} else {
+	    params.put("like", "1");
 	}
+	G.http.post(url, params, new JsonHttpResponseHandler() {
+	    @Override
+	    public void onSuccess(JSONObject json_root) {
+		Log.d("MainActivity.http", "json:" + json_root);
+		try {
+		    int ecode = json_root.getInt("ecode");
+		    String msg = "" + ecode + "."
+			    + json_root.optString("msg", "系统繁忙");
+		    if (ecode == 0) {
+			mUserLiked = !mUserLiked;
+		    } else {
+			Toast.makeText(getApplication(), msg,
+				Toast.LENGTH_SHORT).show();
+		    }
+		} catch (Exception e) {
+		    Log.e("MainActivity.http", "exception:" + e.toString());
+		    String msg = "服务器返回的数据无效";
+		    Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT)
+			    .show();
+		}
+		mButtonLike.setPressed(mUserLiked);
+	    }
+
+	    @Override
+	    public void onFailure(Throwable e, String response) {
+		Log.e("MianActivity.http", "Exception: " + e.toString());
+		e.printStackTrace();
+		String msg = "服务器出错";
+		Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT)
+			.show();
+	    }
+
+	});
 	return;
     }
 
@@ -122,12 +164,12 @@ public class DetailActivity extends Activity {
     }
 
     public void onClick_detail_btn_comment(View v) {
-	Intent intent = new Intent(getApplication(), CommentActivity.class);
+	Intent intent = new Intent(getApplication(), ActivityComment.class);
 	this.startActivity(intent);
     }
 
     public void onClick_detail_btn_avatar(View v) {
-	Intent intent = new Intent(getApplication(), UserActivity.class);
+	Intent intent = new Intent(getApplication(), ActivityUser.class);
 	intent.putExtra(DataUser.intentTag, mUser.getId());
 	this.startActivity(intent);
     }

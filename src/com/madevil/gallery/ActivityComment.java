@@ -7,7 +7,9 @@ import java.util.List;
 import org.json.JSONObject;
 
 import com.madevil.gallery.R;
-import com.madevil.gallery.PictureAdapter.ViewHolder;
+import com.madevil.gallery.R.id;
+import com.madevil.gallery.R.layout;
+import com.madevil.gallery.R.menu;
 import com.origamilabs.library.views.StaggeredGridView;
 import com.squareup.picasso.Picasso;
 
@@ -85,7 +87,7 @@ class CommentAdapter extends BaseAdapter {
 		public void onClick(View v) {
 		    int index = (Integer) v.getTag();
 		    DataComment comment = mComments.get(index);
-		    Intent intent = new Intent(mContext, UserActivity.class);
+		    Intent intent = new Intent(mContext, ActivityUser.class);
 		    intent.putExtra(DataUser.intentTag, comment.user);
 		    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		    mContext.startActivity(intent);
@@ -103,7 +105,7 @@ class CommentAdapter extends BaseAdapter {
     }
 }
 
-public class CommentActivity extends Activity {
+public class ActivityComment extends Activity {
     private CommentAdapter mAdapter;
     private ListView mListView;
 

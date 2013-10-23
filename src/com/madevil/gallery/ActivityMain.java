@@ -12,6 +12,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBar.Tab;
+import android.support.v7.app.ActionBarActivity;
+import android.app.Activity;
+import android.app.FragmentTransaction;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
@@ -48,32 +53,37 @@ class ViewAdapter extends FragmentPagerAdapter {
     public int getCount() {
 	return ITEM_COUNT;
     }
-
 }
 
-public class ActivityMain extends FragmentActivity {
-    private ViewAdapter mViewAdapter;
-    private ViewPager mPager;
-    private Button mButtonIndex, mButtonFeeds, mButtonMyself;
+public class ActivityMain extends ActionBarActivity {
+    private ViewAdapter mViewAdapter = null;
+    private ViewPager mPager = null;
     private DataShare share = null;
+    private ActionBar mBar = null;
 
     /*
-    protected void onSaveInstanceState (Bundle outState) {
-	outState.putSerializable("DataShare", DataShare.Ins(getApplicationContext()));
-    }
-    protected void onRestoreInstanceState (Bundle savedInstanceState) {
-	DataShare share = DataShare.Ins(getApplicationContext());
-	share = (DataShare) savedInstanceState.getSerializable("DataShare");
-    }
-    */
+     * protected void onSaveInstanceState (Bundle outState) {
+     * outState.putSerializable("DataShare",
+     * DataShare.Ins(getApplicationContext())); } protected void
+     * onRestoreInstanceState (Bundle savedInstanceState) { DataShare share =
+     * DataShare.Ins(getApplicationContext()); share = (DataShare)
+     * savedInstanceState.getSerializable("DataShare"); }
+     */
 
-    void UpdateNavigate() {
-	Boolean[] values = new Boolean[3];
-	Arrays.fill(values, false);
-	values[mPager.getCurrentItem()] = true;
-	mButtonIndex.setPressed(values[ViewAdapter.ITEM_INDEX]);
-	mButtonFeeds.setPressed(values[ViewAdapter.ITEM_FEEDS]);
-	mButtonMyself.setPressed(values[ViewAdapter.ITEM_MYSELF]);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+	getMenuInflater().inflate(R.menu.activity_main, menu);
+	return true;
+    }
+
+    protected void onResume() {
+	super.onResume();
+	UpdateTabs();
+    }
+
+    void UpdateTabs() {
+	int index = mPager.getCurrentItem();
+	mBar.selectTab(mBar.getTabAt(index));
     }
 
     @Override
@@ -88,10 +98,9 @@ public class ActivityMain extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_main);
+
+	mBar = this.getSupportActionBar();
 	share = DataShare.Ins(this.getApplicationContext());
-	mButtonIndex = (Button) this.findViewById(R.id.main_btn_index);
-	mButtonFeeds = (Button) this.findViewById(R.id.main_btn_feeds);
-	mButtonMyself = (Button) this.findViewById(R.id.main_btn_myself);
 
 	mViewAdapter = new ViewAdapter(getSupportFragmentManager());
 	mPager = (ViewPager) findViewById(R.id.main_layout_pager);
@@ -107,22 +116,45 @@ public class ActivityMain extends FragmentActivity {
 	    }
 
 	    @Override
-	    public void onPageSelected(int type) {
-		UpdateNavigate();
+	    public void onPageSelected(int index) {
+		UpdateTabs();
 	    }
 	});
-	mButtonIndex.setPressed(true);
+
+	mBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
+	mBar.setDisplayShowTitleEnabled(false);
+	mBar.addTab(mBar.newTab().setText("动态")
+		.setTabListener(new PageListener(ViewAdapter.ITEM_FEEDS)));
+	mBar.addTab(mBar.newTab().setText("浏览")
+		.setTabListener(new PageListener(ViewAdapter.ITEM_INDEX)));
+	mBar.addTab(mBar.newTab().setText("我")
+		.setTabListener(new PageListener(ViewAdapter.ITEM_MYSELF)));
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-	getMenuInflater().inflate(R.menu.activity_main, menu);
-	return true;
-    }
+    class PageListener implements ActionBar.TabListener {
+	private int mIndex;
 
-    protected void onResume() {
-	super.onResume();
-	UpdateNavigate();
+	public PageListener(int index) {
+	    mIndex = index;
+	}
+
+	@Override
+	public void onTabReselected(Tab arg0,
+		android.support.v4.app.FragmentTransaction arg1) {
+	    mPager.setCurrentItem(mIndex);
+	}
+
+	@Override
+	public void onTabSelected(Tab arg0,
+		android.support.v4.app.FragmentTransaction arg1) {
+	    mPager.setCurrentItem(mIndex);
+	}
+
+	@Override
+	public void onTabUnselected(Tab arg0,
+		android.support.v4.app.FragmentTransaction arg1) {
+	    // TODO Auto-generated method stub
+	}
     }
 
 }

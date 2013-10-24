@@ -15,8 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.madevil.gallery.R;
-import com.origamilabs.library.views.StaggeredGridView;
 
 public class FragmentFeeds extends Fragment {
     private Context mContext;

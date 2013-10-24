@@ -1,33 +1,24 @@
 package com.madevil.gallery;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-import com.madevil.gallery.R;
-import com.squareup.picasso.Picasso;
-
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.app.Dialog;
 import android.content.Intent;
+import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-public class ActivityDetail extends Activity {
+import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.squareup.picasso.Picasso;
+
+public class ActivityDetail extends ActionBarActivity {
     private DataUser mUser = new DataUser();
     private Boolean mUserLiked = false;
     private Boolean mUserCommented = false;
@@ -35,10 +26,24 @@ public class ActivityDetail extends Activity {
     private DataPicture mPicture = null;
     private Button mButtonLike, mButtonComment, mButtonDownload;
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+	switch (item.getItemId()) {
+	case android.R.id.home:
+	    NavUtils.navigateUpFromSameTask(this);
+	    return true;
+	default:
+	    return super.onOptionsItemSelected(item);
+	}
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_detail);
+	this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 
 	Intent intent = getIntent();
 	mPicture = (DataPicture) intent
@@ -106,10 +111,6 @@ public class ActivityDetail extends Activity {
 	// Inflate the menu; this adds items to the action bar if it is present.
 	getMenuInflater().inflate(R.menu.activity_detail, menu);
 	return true;
-    }
-
-    public void onClick_detail_btn_back(View v) {
-	this.finish();
     }
 
     public void onClick_detail_btn_like(View v) {

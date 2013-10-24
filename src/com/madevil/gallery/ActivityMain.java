@@ -1,13 +1,9 @@
 package com.madevil.gallery;
 
-import java.util.Arrays;
-
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -15,15 +11,8 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
-import android.app.Activity;
-import android.app.FragmentTransaction;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Menu;
-import android.widget.Button;
-import android.widget.Toast;
-import com.madevil.gallery.R;
-import com.tencent.tauth.Tencent;
 
 class ViewAdapter extends FragmentPagerAdapter {
     public static final int ITEM_FEEDS = 0;
@@ -129,6 +118,7 @@ public class ActivityMain extends ActionBarActivity {
 		.setTabListener(new PageListener(ViewAdapter.ITEM_INDEX)));
 	mBar.addTab(mBar.newTab().setText("我")
 		.setTabListener(new PageListener(ViewAdapter.ITEM_MYSELF)));
+	mBar.selectTab(mBar.getTabAt(ViewAdapter.ITEM_INDEX));
     }
 
     class PageListener implements ActionBar.TabListener {

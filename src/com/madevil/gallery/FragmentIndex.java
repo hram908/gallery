@@ -21,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.madevil.gallery.R;
 import com.origamilabs.library.views.StaggeredGridView;
 import com.squareup.picasso.Picasso;
 

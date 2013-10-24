@@ -1,34 +1,24 @@
 package com.madevil.gallery;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.json.JSONObject;
-
-import com.madevil.gallery.R;
-import com.madevil.gallery.R.id;
-import com.madevil.gallery.R.layout;
-import com.madevil.gallery.R.menu;
-import com.origamilabs.library.views.StaggeredGridView;
-import com.squareup.picasso.Picasso;
-
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
+import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 class DataComment {
     public String id = "";
@@ -105,14 +95,27 @@ class CommentAdapter extends BaseAdapter {
     }
 }
 
-public class ActivityComment extends Activity {
+public class ActivityComment extends ActionBarActivity {
     private CommentAdapter mAdapter;
     private ListView mListView;
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+	switch (item.getItemId()) {
+	case android.R.id.home:
+	    NavUtils.navigateUpFromSameTask(this);
+	    return true;
+	default:
+	    return super.onOptionsItemSelected(item);
+	}
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_comment);
+	this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 	mAdapter = new CommentAdapter(getApplication());
 	mListView = (ListView) this.findViewById(R.id.comment_view_list);
 	mListView.setAdapter(mAdapter);

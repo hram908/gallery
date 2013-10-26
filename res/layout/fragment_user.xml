@@ -35,8 +35,8 @@
 
             <TextView
                 android:id="@+id/user_text_intro"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
                 android:gravity="center"
                 android:text="无图无真相，有图呢？"
                 android:textAppearance="?android:attr/textAppearanceSmall" />

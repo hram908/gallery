@@ -2,6 +2,7 @@ package com.madevil.gallery;
 
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -25,8 +26,9 @@ public class ActivityDetail extends ActionBarActivity {
     private Boolean mUserDownloaded = false;
     private DataPicture mPicture = null;
     private Button mButtonLike, mButtonComment, mButtonDownload;
+    private Context mContext = null;
 
-
+    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 	switch (item.getItemId()) {
@@ -43,13 +45,17 @@ public class ActivityDetail extends ActionBarActivity {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_detail);
 	this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
+	mContext = this.getApplicationContext();
 
 	Intent intent = getIntent();
 	mPicture = (DataPicture) intent
 		.getSerializableExtra(DataPicture.intentTag);
-	Picasso.with(getApplication()).load(mPicture.getUrl())
+	Log.d("ActivityDetail", "picture=" + mPicture);
+	Picasso.with(mContext)
+		.load(mPicture.getUrl())
 		.into((ImageView) this.findViewById(R.id.detail_image));
+
+	Log.d("PictureAdapter", "onCreate() id=" + mPicture.getId());
 
 	mButtonLike = (Button) this.findViewById(R.id.detail_btn_like);
 	mButtonComment = (Button) this.findViewById(R.id.detail_btn_comment);
@@ -60,7 +66,7 @@ public class ActivityDetail extends ActionBarActivity {
 	mButtonDownload.setText(String.format("%s",
 		mPicture.getDownloadNumber()));
 
-	String url = G.Url.getPictureDetail(mPicture.getId());
+	String url = G.Url.pictureInfo(mPicture.getId());
 	Log.i("DetailActivity.http", "url: " + url);
 	G.http.get(url, new JsonHttpResponseHandler() {
 	    @Override
@@ -75,11 +81,11 @@ public class ActivityDetail extends ActionBarActivity {
 				Toast.LENGTH_SHORT).show();
 			return;
 		    }
-		    JSONObject obj = json_root; // FIXME .getJSONObject("data");
+		    JSONObject obj = json_root.getJSONObject("data");
 		    mUserLiked = obj.optBoolean("liked", false);
 		    mUserCommented = obj.optBoolean("commented", false);
 		    mUserDownloaded = obj.optBoolean("downloaded", false);
-		    mUser.id = json_root.getString("owner");
+		    mUser.id = obj.getString("owner");
 		    Log.d("DetailActivity", "uesr_id=" + mUser.id);
 		} catch (Exception e) {
 		    Log.e("DetailActivity.http", "exception:" + e.toString());
@@ -114,7 +120,8 @@ public class ActivityDetail extends ActionBarActivity {
     }
 
     public void onClick_detail_btn_like(View v) {
-	String url = G.Url.getPictureDetail(mPicture.getId());
+	mButtonLike.setEnabled(false);
+	String url = G.Url.doPictureLike(mPicture.getId());
 	// do request
 	RequestParams params = new RequestParams();
 	if (mUserLiked) {
@@ -125,6 +132,7 @@ public class ActivityDetail extends ActionBarActivity {
 	G.http.post(url, params, new JsonHttpResponseHandler() {
 	    @Override
 	    public void onSuccess(JSONObject json_root) {
+		mButtonLike.setEnabled(true);
 		Log.d("MainActivity.http", "json:" + json_root);
 		try {
 		    int ecode = json_root.getInt("ecode");
@@ -147,6 +155,7 @@ public class ActivityDetail extends ActionBarActivity {
 
 	    @Override
 	    public void onFailure(Throwable e, String response) {
+		mButtonLike.setEnabled(true);
 		Log.e("MianActivity.http", "Exception: " + e.toString());
 		e.printStackTrace();
 		String msg = "服务器出错";
@@ -166,12 +175,13 @@ public class ActivityDetail extends ActionBarActivity {
 
     public void onClick_detail_btn_comment(View v) {
 	Intent intent = new Intent(getApplication(), ActivityComment.class);
-	this.startActivity(intent);
+	intent.putExtra(DataPicture.intentTag, mPicture);
+	this.startActivityForResult(intent, 0);
     }
 
     public void onClick_detail_btn_avatar(View v) {
 	Intent intent = new Intent(getApplication(), ActivityUser.class);
 	intent.putExtra(DataUser.intentTag, mUser.id);
-	this.startActivity(intent);
+	this.startActivityForResult(intent, 0);
     }
 }

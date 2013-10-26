@@ -5,14 +5,14 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ActivityComment" >
+            <requestFocus />
 
+    
     <ListView
         android:id="@+id/comment_view_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1" >
-
-            <requestFocus />
 
     </ListView>
 
@@ -29,12 +29,13 @@
         </EditText>
 
         <Button
-            android:id="@+id/comment_btn_add"
+            android:id="@+id/comment_btn_send"
             style="?android:attr/buttonStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Button" />
+            android:onClick="onClick_comment_btn_add"
+            android:text="发表" />
 
     </LinearLayout>
 

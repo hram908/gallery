@@ -3,7 +3,7 @@ package com.madevil.gallery;
 import java.io.Serializable;
 
 public class DataPicture implements Serializable {
-	public static final String intentTag = "com.myapp.picture.object";
+	public static final String intentTag = "com.madevil.picture.object";
 
 	/**
 	 *

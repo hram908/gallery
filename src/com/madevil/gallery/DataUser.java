@@ -8,7 +8,7 @@ public class DataUser implements Serializable {
 	 */
 	private static final long serialVersionUID = -3798278244379962493L;
 
-	public static final String intentTag = "com.myapp.user.object";
+	public static final String intentTag = "com.madevil.user.object";
 
 	public String id = "";
 	public String nick = "";

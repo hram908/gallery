@@ -28,7 +28,7 @@ public class FragmentFeeds extends Fragment {
     }
 
     private void AddItemToContainer(int pageindex) {
-	String url = G.Url.getIndexByNew(pageindex);
+	String url = G.Url.index(pageindex);
 	Log.d("MainActivity.http", "current url:" + url);
 
 	// do request

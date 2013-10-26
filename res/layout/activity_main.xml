@@ -3,43 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <!--
-    <LinearLayout
-        android:id="@+id/main_layout_navigate"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/layout_light_down"
-        android:gravity="center" >
-
-        <Button
-            android:id="@+id/main_btn_feeds"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:background="@drawable/button_navigate"
-            android:padding="16dp"
-            android:text="动态" />
-
-        <Button
-            android:id="@+id/main_btn_index"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:background="@drawable/button_navigate"
-            android:padding="16dp"
-            android:text="浏览" />
-
-        <Button
-            android:id="@+id/main_btn_myself"
-            android:layout_width="wrap_content"
-            android:layout_height="48dp"
-            android:background="@drawable/button_navigate"
-            android:padding="16dp"
-            android:text="我的" />
-
-    </LinearLayout>
-    -->
-
     <android.support.v4.view.ViewPager
         android:id="@+id/main_layout_pager"
         android:layout_width="match_parent"

@@ -1,33 +1,70 @@
 package com.madevil.gallery;
 
+import java.io.File;
+import java.util.List;
+
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.http.HttpResponseCache;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
+import com.madevil.gallery.ActivityMain.ViewAdapter;
+import com.madevil.gallery.PictureAdapter.ViewHolder;
 import com.squareup.picasso.Picasso;
 
-public class ActivityDetail extends ActionBarActivity {
-    private DataUser mUser = new DataUser();
-    private Boolean mUserLiked = false;
-    private Boolean mUserCommented = false;
-    private Boolean mUserDownloaded = false;
-    private DataPicture mPicture = null;
-    private Button mButtonLike, mButtonComment, mButtonDownload;
-    private Context mContext = null;
+class PicturePagerAdapter extends FragmentPagerAdapter {
+    private DataShare share = null;
 
+    public PicturePagerAdapter(FragmentManager fm, Context c) {
+	super(fm);
+	share = DataShare.Ins(c);
+    }
+
+    @Override
+    public Fragment getItem(int index) {
+	DataPicture picture = share.pictures.get(index);
+	Fragment f = FragmentPicture.Ins(picture);
+	return f;
+    }
+
+    @Override
+    public int getCount() {
+	return share.pictures.size();
+    }
+}
+
+
+public class ActivityDetail extends ActionBarActivity {
+    private Context mContext = null;    
+    private ActionBar mBar = null;
+    private DataShare share = null;
+    private PicturePagerAdapter mAdapter = null;
+    private ViewPager mPager = null;
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -45,71 +82,31 @@ public class ActivityDetail extends ActionBarActivity {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_detail);
 	this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-	mContext = this.getApplicationContext();
 
+	mBar = getSupportActionBar();
+	mContext = getApplicationContext();
+	share = DataShare.Ins(mContext);
+	
 	Intent intent = getIntent();
-	mPicture = (DataPicture) intent
-		.getSerializableExtra(DataPicture.intentTag);
-	Log.d("ActivityDetail", "picture=" + mPicture);
-	Picasso.with(mContext)
-		.load(mPicture.getUrl())
-		.into((ImageView) this.findViewById(R.id.detail_image));
+	int index = intent.getIntExtra("index", 0);
 
-	Log.d("PictureAdapter", "onCreate() id=" + mPicture.getId());
-
-	mButtonLike = (Button) this.findViewById(R.id.detail_btn_like);
-	mButtonComment = (Button) this.findViewById(R.id.detail_btn_comment);
-	mButtonDownload = (Button) this.findViewById(R.id.detail_btn_download);
-	mButtonLike.setText(String.format("%s", mPicture.getLikeNumber()));
-	mButtonComment
-		.setText(String.format("%s", mPicture.getCommentNumber()));
-	mButtonDownload.setText(String.format("%s",
-		mPicture.getDownloadNumber()));
-
-	String url = G.Url.pictureInfo(mPicture.getId());
-	Log.i("DetailActivity.http", "url: " + url);
-	G.http.get(url, new JsonHttpResponseHandler() {
+	mAdapter = new PicturePagerAdapter(getSupportFragmentManager(), mContext);
+	mPager = (ViewPager) findViewById(R.id.detail_layout_pager);
+	mPager.setAdapter(mAdapter);
+	mPager.setCurrentItem(index);
+	mPager.setOnPageChangeListener(new OnPageChangeListener() {
 	    @Override
-	    public void onSuccess(JSONObject json_root) {
-		Log.d("DetailActivity.http", "json:" + json_root);
-		try {
-		    int ecode = json_root.getInt("ecode");
-		    if (ecode != 0) {
-			String msg = "" + ecode + "."
-				+ json_root.optString("msg", "系统繁忙，请休息一下再来～");
-			Toast.makeText(getApplication(), msg,
-				Toast.LENGTH_SHORT).show();
-			return;
-		    }
-		    JSONObject obj = json_root.getJSONObject("data");
-		    mUserLiked = obj.optBoolean("liked", false);
-		    mUserCommented = obj.optBoolean("commented", false);
-		    mUserDownloaded = obj.optBoolean("downloaded", false);
-		    mUser.id = obj.getString("owner");
-		    Log.d("DetailActivity", "uesr_id=" + mUser.id);
-		} catch (Exception e) {
-		    Log.e("DetailActivity.http", "exception:" + e.toString());
-		    String msg = "服务器返回的数据无效";
-		    Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT)
-			    .show();
-		}
-		mButtonLike.setPressed(mUserLiked);
-		mButtonComment.setPressed(mUserCommented);
-		mButtonDownload.setPressed(mUserDownloaded);
-
+	    public void onPageScrollStateChanged(int arg0) {
 	    }
 
 	    @Override
-	    public void onFailure(Throwable e, String response) {
-		Log.e("MianActivity.http", "Exception: " + e.toString());
-		e.printStackTrace();
-		String msg = "服务器出错";
-		Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT)
-			.show();
+	    public void onPageScrolled(int arg0, float arg1, int arg2) {
 	    }
 
+	    @Override
+	    public void onPageSelected(int index) {
+	    }
 	});
-
     }
 
     @Override
@@ -118,70 +115,6 @@ public class ActivityDetail extends ActionBarActivity {
 	getMenuInflater().inflate(R.menu.activity_detail, menu);
 	return true;
     }
-
-    public void onClick_detail_btn_like(View v) {
-	mButtonLike.setEnabled(false);
-	String url = G.Url.doPictureLike(mPicture.getId());
-	// do request
-	RequestParams params = new RequestParams();
-	if (mUserLiked) {
-	    params.put("like", "0");
-	} else {
-	    params.put("like", "1");
-	}
-	G.http.post(url, params, new JsonHttpResponseHandler() {
-	    @Override
-	    public void onSuccess(JSONObject json_root) {
-		mButtonLike.setEnabled(true);
-		Log.d("MainActivity.http", "json:" + json_root);
-		try {
-		    int ecode = json_root.getInt("ecode");
-		    String msg = "" + ecode + "."
-			    + json_root.optString("msg", "系统繁忙");
-		    if (ecode == 0) {
-			mUserLiked = !mUserLiked;
-		    } else {
-			Toast.makeText(getApplication(), msg,
-				Toast.LENGTH_SHORT).show();
-		    }
-		} catch (Exception e) {
-		    Log.e("MainActivity.http", "exception:" + e.toString());
-		    String msg = "服务器返回的数据无效";
-		    Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT)
-			    .show();
-		}
-		mButtonLike.setPressed(mUserLiked);
-	    }
-
-	    @Override
-	    public void onFailure(Throwable e, String response) {
-		mButtonLike.setEnabled(true);
-		Log.e("MianActivity.http", "Exception: " + e.toString());
-		e.printStackTrace();
-		String msg = "服务器出错";
-		Toast.makeText(getApplication(), msg, Toast.LENGTH_SHORT)
-			.show();
-	    }
-
-	});
-	return;
-    }
-
-    public void onClick_detail_btn_download(View v) {
-	if (!mUserDownloaded) {
-	    // alert the coin
-	}
-    }
-
-    public void onClick_detail_btn_comment(View v) {
-	Intent intent = new Intent(getApplication(), ActivityComment.class);
-	intent.putExtra(DataPicture.intentTag, mPicture);
-	this.startActivityForResult(intent, 0);
-    }
-
-    public void onClick_detail_btn_avatar(View v) {
-	Intent intent = new Intent(getApplication(), ActivityUser.class);
-	intent.putExtra(DataUser.intentTag, mUser.id);
-	this.startActivityForResult(intent, 0);
-    }
+    
+    
 }

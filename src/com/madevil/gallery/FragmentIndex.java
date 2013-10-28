@@ -79,6 +79,7 @@ class PictureAdapter extends BaseAdapter {
 		    Intent intent = new Intent(v.getContext(),
 			    ActivityDetail.class);
 		    intent.putExtra(DataPicture.intentTag, picture);
+		    intent.putExtra("index", holder.index);
 		    v.getContext().startActivity(intent);
 		    Log.d("PictureAdapter", "onClick() index="
 			    + holder.index + ", id=" + picture.getId());

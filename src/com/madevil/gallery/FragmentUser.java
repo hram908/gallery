@@ -380,8 +380,8 @@ public class FragmentUser extends Fragment {
 
 	    RequestParams params = new RequestParams();
 	    params.put("title", "no title");
-	    params.put("width", "700");
-	    params.put("height", "700");
+	    params.put("width", "7000");
+	    params.put("height", "7000");
 	    params.put("file", new File(filePath));
 	    String url = G.Url.doUpload();
 	    G.http.setCookieStore(share.http_cookies);

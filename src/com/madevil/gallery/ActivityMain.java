@@ -1,15 +1,11 @@
 package com.madevil.gallery;
 
-import java.io.File;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.net.http.HttpResponseCache;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -17,8 +13,17 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import com.squareup.picasso.Picasso;
+import com.viewpagerindicator.TabPageIndicator;
+import com.viewpagerindicator.TitlePageIndicator;
+
+class BasicActivity extends ActionBarActivity {
+}
 
 public class ActivityMain extends ActionBarActivity {
     public final String PREFS_NAME = "cache";
@@ -63,11 +68,11 @@ public class ActivityMain extends ActionBarActivity {
 	Log.d("ActivityMain", "onStop(), dump DataShare.");
 	share.dump(getSharedPreferences(PREFS_NAME, 0));
 
-	// flush http cache
-	HttpResponseCache cache = HttpResponseCache.getInstalled();
-	if (cache != null) {
-	    cache.flush();
-	}
+	/*
+	 * // flush http cache HttpResponseCache cache =
+	 * HttpResponseCache.getInstalled(); if (cache != null) { cache.flush();
+	 * }
+	 */
     }
 
     @Override
@@ -94,15 +99,14 @@ public class ActivityMain extends ActionBarActivity {
 	Log.d("ActivityMain", "onCreate(), load DataShare");
 	share.load(getSharedPreferences(PREFS_NAME, 0));
 
-	// settings http cache
-	try {
-	    File httpCacheDir = new File(mContext.getCacheDir(), "http");
-	    long httpCacheSize = 100 * 1024 * 1024; // 10 MiB
-	    HttpResponseCache.install(httpCacheDir, httpCacheSize);
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    Log.i("ActivityMain", "HTTP cache installation failed:" + e);
-	}
+	/*
+	 * // settings http cache try { File httpCacheDir = new
+	 * File(mContext.getCacheDir(), "http-cache"); long httpCacheSize = 50 *
+	 * 1024 * 1024; // 50 MiB HttpResponseCache.install(httpCacheDir,
+	 * httpCacheSize); } catch (Exception e) { e.printStackTrace();
+	 * Log.i("ActivityMain", "HTTP cache installation failed:" + e); }
+	 */
+	Picasso.with(mContext).setDebugging(true);
 
 	mViewAdapter = new ViewAdapter(getSupportFragmentManager());
 	mPager = (ViewPager) findViewById(R.id.main_layout_pager);
@@ -123,6 +127,8 @@ public class ActivityMain extends ActionBarActivity {
 	    }
 	});
 
+	mBar.setTitle(R.string.title_activity_main);
+	/*
 	mBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 	mBar.setDisplayShowTitleEnabled(false);
 	mBar.addTab(mBar.newTab().setText("动态")
@@ -132,11 +138,21 @@ public class ActivityMain extends ActionBarActivity {
 	mBar.addTab(mBar.newTab().setText("我")
 		.setTabListener(new PageListener(ViewAdapter.ITEM_LOGIN)));
 	mBar.selectTab(mBar.getTabAt(ViewAdapter.ITEM_INDEX));
+	*/
+	
+	//Bind the title indicator to the adapter
+	LayoutInflater inflator = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	View v = inflator.inflate(R.layout.actionbar_tabs, null);
+	TabPageIndicator indicator = (TabPageIndicator)v.findViewById(R.id.indicator);
+	indicator.setViewPager(mPager);
+	mBar.setDisplayShowCustomEnabled(true);
+	mBar.setDisplayShowTitleEnabled(false);
+	mBar.setCustomView(v);
     }
 
     void UpdateTabs() {
 	int index = mPager.getCurrentItem();
-	mBar.selectTab(mBar.getTabAt(index));
+	//mBar.selectTab(mBar.getTabAt(index));
 	switch (index) {
 	case ViewAdapter.ITEM_FEEDS:
 	    mBar.setTitle(R.string.title_fragment_feeds);
@@ -234,6 +250,12 @@ public class ActivityMain extends ActionBarActivity {
 	    return POSITION_UNCHANGED;
 	}
 
+	private final String[] CONTENT = new String[] { "动态", "浏览", "我" };
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return CONTENT[position % CONTENT.length].toUpperCase();
+        }
 	@Override
 	public int getCount() {
 	    return ITEM_COUNT;

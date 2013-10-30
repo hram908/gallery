@@ -38,10 +38,7 @@ class PictureAdapter extends BaseAdapter {
 
     class ViewHolder {
 	ImageView imageView;
-	TextView contentView;
-	TextView timeView;
 	int index;
-	int upload = 0;
     }
 
     @Override
@@ -183,7 +180,7 @@ public class FragmentIndex extends Fragment {
 		picture.setCommentNumber(obj.optInt("comment_num", 0));
 		picture.setLikeNumber(obj.optInt("like", 0));
 		picture.setDownloadNumber(obj.optInt("download", 0));
-		picture.setHeight(obj.optInt("height", 0));
+		picture.setHeight(obj.optInt("height"));
 		picture.setWidth(obj.optInt("width"));
 		items.add(picture);
 	    }

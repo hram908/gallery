@@ -92,7 +92,7 @@ class PictureAdapter extends BaseAdapter {
 		height));
 	// holder.contentView.setText(picture.getTitle());
 	Context c = parent.getContext();
-	Picasso.with(c).load(picture.getUrl()).into(holder.imageView);
+	Picasso.with(c).load(picture.getSmallUrl()).into(holder.imageView);
 	return view;
     }
 

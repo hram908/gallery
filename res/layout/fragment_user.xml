@@ -30,7 +30,7 @@
                 android:id="@+id/user_text_nick"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="色图狂魔"
+                android:text="@string/t_user_nick"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <TextView
@@ -38,7 +38,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:gravity="center"
-                android:text="无图无真相，有图呢？"
+                android:text="@string/t_user_intro"
                 android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <LinearLayout

@@ -17,12 +17,13 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 
 import com.squareup.picasso.Picasso;
 import com.umeng.analytics.MobclickAgent;
+import com.umeng.fb.FeedbackAgent;
 import com.viewpagerindicator.TabPageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
-
 
 public class ActivityMain extends BasicActivity {
     public final String PREFS_NAME = "cache";
@@ -32,26 +33,50 @@ public class ActivityMain extends BasicActivity {
     private ActionBar mBar = null;
     private Context mContext = null;
 
+
+    private boolean onPageritemSelected(MenuItem item) {
+	    Fragment f = mViewAdapter.getItem(mPager.getCurrentItem());
+	    Log.d("MainActivity", "calling fragment=" + f.getClass().getName());
+	    return f.onOptionsItemSelected(item);
+	
+    }
+    @SuppressLint("NewApi")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 	Log.d("ActivityMain", "onOptionsItemSelected()");
 	// Handle item selection
 	switch (item.getItemId()) {
+	case R.id.menu_login:
+	    mPager.setCurrentItem(ViewAdapter.ITEM_LOGIN);
+	    invalidateOptionsMenu();
+	    return this.onPageritemSelected(item);
 	case R.id.menu_logout:
 	    share.is_login = false;
 	    share.login_info = "";
 	    mViewAdapter.notifyDataSetChanged();
+	    mPager.setCurrentItem(ViewAdapter.ITEM_LOGIN);
+	    invalidateOptionsMenu();
 	    return true;
+	case R.id.menu_feedback:
+	    FeedbackAgent agent = new FeedbackAgent(this);
+	    agent.startFeedbackActivity();
+	    return true;
+	case R.id.menu_refresh:
+	    mPager.setCurrentItem(ViewAdapter.ITEM_INDEX);
+	    return this.onPageritemSelected(item);
 	default:
-	    Fragment f = mViewAdapter.getItem(mPager.getCurrentItem());
-	    Log.d("MainActivity", "calling fragment=" + f.getClass().getName());
-	    return f.onOptionsItemSelected(item);
+	    return this.onPageritemSelected(item);
 	}
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 	getMenuInflater().inflate(R.menu.activity_main, menu);
+	if (share.is_login) {
+	    menu.setGroupVisible(R.id.menu_group_is_not_login, false);
+	} else {
+	    menu.setGroupVisible(R.id.menu_group_is_login, false);
+	}
 	return true;
     }
 
@@ -74,6 +99,7 @@ public class ActivityMain extends BasicActivity {
 	 */
     }
 
+    @SuppressLint("NewApi")
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	Log.d("MainActivity", "onActivityResult()");
@@ -81,6 +107,7 @@ public class ActivityMain extends BasicActivity {
 	Fragment f = mViewAdapter.getItem(mPager.getCurrentItem());
 	Log.d("MainActivity", "calling fragment=" + f.getClass().getName());
 	f.onActivityResult(requestCode, resultCode, data);
+	invalidateOptionsMenu();
 	// share.tencent.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -89,6 +116,7 @@ public class ActivityMain extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_main);
+	overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
 
 	mBar = getSupportActionBar();
 	mContext = getApplicationContext();
@@ -126,7 +154,7 @@ public class ActivityMain extends BasicActivity {
 	    }
 	});
 
-	mBar.setTitle(R.string.title_activity_main);
+	mBar.setTitle(R.string.msg_welcome);
 	// Bind the title indicator to the adapter
 	LayoutInflater inflator = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	View v = inflator.inflate(R.layout.actionbar_tabs, null);

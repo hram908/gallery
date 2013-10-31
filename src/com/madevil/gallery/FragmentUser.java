@@ -10,13 +10,10 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -138,7 +135,7 @@ class UserPictureAdapter extends BaseAdapter {
 
 	DataPicture picture = mPictures.get(index);
 	ViewHolder holder = (ViewHolder) view.getTag();
-	Picasso.with(mContext).load(picture.getUrl()).into(holder.imageView);
+	Picasso.with(mContext).load(picture.getSmallUrl()).into(holder.imageView);
 	return view;
     }
 
@@ -165,7 +162,6 @@ public class FragmentUser extends Fragment {
     private TextView mTextIntro = null;
     private Button mButtonMoney = null;
     private Button mButtonPicture = null;
-    private ImageButton mButtonUpload = null;
     private Context mContext = null;
     private ProgressDialog mDialog = null;
 
@@ -250,11 +246,6 @@ public class FragmentUser extends Fragment {
 	mTextIntro = (TextView) view.findViewById(R.id.user_text_intro);
 	mButtonMoney = (Button) view.findViewById(R.id.user_btn_money);
 	mButtonPicture = (Button) view.findViewById(R.id.user_btn_picture);
-
-	// 上传按钮
-	mButtonUpload = (ImageButton) view.findViewById(R.id.user_btn_upload);
-	if (mUser.id == share.user.id) {
-	}
 
 	// 异步发起读取用户信息的操作
 	// do request
@@ -376,7 +367,7 @@ public class FragmentUser extends Fragment {
 			.show();
 		Log.e("Bitmap", "Unknown path");
 	    }
-	    Log.e("image", "filepath=" + filePath);
+	    Log.d("image", "filepath=" + filePath);
 
 	    RequestParams params = new RequestParams();
 	    params.put("title", "no title");

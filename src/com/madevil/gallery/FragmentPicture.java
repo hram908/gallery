@@ -47,7 +47,7 @@ public class FragmentPicture extends Fragment {
 	mContext = this.getActivity().getApplication();
 
 	Picasso.with(mContext)
-		.load(mPicture.getUrl().replace("width=200", "width=600"))
+		.load(mPicture.getMiddleUrl())
 		.into((ImageView) view.findViewById(R.id.detail_image));
 
 	Log.d("PictureAdapter", "onCreate() id=" + mPicture.getId());

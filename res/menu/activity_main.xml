@@ -6,22 +6,42 @@
         android:showAsAction="never"
         android:title="@string/menu_refresh">
     </item>
-    <item
-        android:id="@+id/menu_upload"
-        android:orderInCategory="2"
-        android:showAsAction="never"
-        android:title="@string/menu_upload">
-    </item>
-    <item
-        android:id="@+id/menu_settings"
-        android:orderInCategory="100"
-        android:showAsAction="never"
-        android:title="@string/menu_settings"/>
-    <item
-        android:id="@+id/menu_logout"
-        android:orderInCategory="999"
-        android:showAsAction="never"
-        android:title="@string/menu_logout">
-    </item>
-    
+
+    <group android:id="@+id/menu_group_is_not_login" >
+        <item
+            android:id="@+id/menu_login"
+            android:orderInCategory="10"
+            android:showAsAction="never"
+            android:title="@string/menu_login">
+        </item>
+    </group>
+    <group android:id="@+id/menu_group_is_login" >
+        <item
+            android:id="@+id/menu_logout"
+            android:orderInCategory="11"
+            android:showAsAction="never"
+            android:title="@string/menu_logout">
+        </item>
+        <item
+            android:id="@+id/menu_upload"
+            android:orderInCategory="20"
+            android:showAsAction="never"
+            android:title="@string/menu_upload">
+        </item>
+    </group>
+    <group android:id="@+id/menu_group1" >
+        <item
+            android:id="@+id/menu_feedback"
+            android:orderInCategory="90"
+            android:showAsAction="never"
+            android:title="@string/menu_feedback">
+        </item>
+        <item
+            android:id="@+id/menu_settings"
+            android:orderInCategory="100"
+            android:showAsAction="never"
+            android:title="@string/menu_settings">
+        </item>
+    </group>
+
 </menu>

@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -34,15 +35,26 @@ public class FragmentLogin extends Fragment {
     private TextView mMsg = null;
     private ImageView mButtonLoginQQ = null;
     private DataShare share = null;
-    //private ProgressDialog mDialog = null;
     private Callback mCallback = null;
+    private ProgressDialog mDialog = null;
+
+    class DialogWindows extends AsyncTask<Object, Void, Object> {
+	protected void onPreExecute() {
+	}
+
+	@Override
+	protected Object doInBackground(Object... params) {
+	    return null;
+	}
+    };
 
     /*
      * 把拿到的用户ID发送给后台进行登陆态校验
      */
     public void LoginUser() {
-	//mDialog = ProgressDialog.show(mContext, "正在登陆", "登陆中，请稍后……", true, false);
-	
+	Activity act = this.getActivity();
+	mDialog = ProgressDialog.show(act, "正在登陆", "登陆中，请稍后……", true, false);
+
 	RequestParams params = new RequestParams();
 	params.put("login_info", share.login_info);
 
@@ -54,7 +66,7 @@ public class FragmentLogin extends Fragment {
 	G.http.post(G.Url.doLogin(), params, new JsonHttpResponseHandler() {
 	    @Override
 	    public void onSuccess(JSONObject json_root) {
-		//mDialog.dismiss();
+		mDialog.dismiss();
 		Log.d("http.qq", "json:" + json_root);
 		int ecode = M.ecode(json_root);
 		if (ecode != 0) {
@@ -66,7 +78,8 @@ public class FragmentLogin extends Fragment {
 		try {
 		    JSONObject json_data = json_root.getJSONObject("data");
 		    share.user.nick = json_data.getString("nick");
-		    share.user.avatar = ""; // FIXME json_data.getString("avatar");
+		    share.user.avatar = ""; // FIXME
+					    // json_data.getString("avatar");
 		    Log.d("ActivityMain", "login success!");
 		    ChangeFragmentUser();
 		} catch (Exception e) {
@@ -78,7 +91,7 @@ public class FragmentLogin extends Fragment {
 	    }
 
 	    public void onFailure(Throwable e, String response) {
-		//mDialog.dismiss();
+		mDialog.dismiss();
 		Log.e("http.qq", "Exception: " + e.toString());
 		e.printStackTrace();
 		share.is_login = false;
@@ -127,7 +140,19 @@ public class FragmentLogin extends Fragment {
 	super.onActivityResult(requestCode, resultCode, data);
 	share.tencent.onActivityResult(requestCode, resultCode, data);
     }
-    
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+	// Handle item selection
+	switch (item.getItemId()) {
+	case R.id.menu_login:
+	    LoginByQQ();
+	    return true;
+	default:
+	    return super.onOptionsItemSelected(item);
+	}
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	    Bundle savedInstanceState) {
@@ -148,10 +173,10 @@ public class FragmentLogin extends Fragment {
 	});
 	return view;
     }
-    
+
     public FragmentLogin() {
     }
-    
+
     public static FragmentLogin Instance(Callback c) {
 	FragmentLogin f = new FragmentLogin();
 	f.mCallback = c;
@@ -162,6 +187,5 @@ public class FragmentLogin extends Fragment {
 	Log.d("FragmentLogin", "changin fragment to user");
 	mCallback.call();
     }
-
 
 }

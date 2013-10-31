@@ -59,7 +59,7 @@ class PicturePagerAdapter extends FragmentPagerAdapter {
 }
 
 
-public class ActivityDetail extends ActionBarActivity {
+public class ActivityDetail extends BasicActivity {
     private Context mContext = null;    
     private ActionBar mBar = null;
     private DataShare share = null;

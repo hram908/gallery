@@ -8,7 +8,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class ActivityUser extends ActionBarActivity {
+public class ActivityUser extends BasicActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -19,13 +19,12 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.squareup.picasso.Picasso;
+import com.umeng.analytics.MobclickAgent;
 import com.viewpagerindicator.TabPageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
-class BasicActivity extends ActionBarActivity {
-}
 
-public class ActivityMain extends ActionBarActivity {
+public class ActivityMain extends BasicActivity {
     public final String PREFS_NAME = "cache";
     private ViewAdapter mViewAdapter = null;
     private ViewPager mPager = null;
@@ -128,31 +127,21 @@ public class ActivityMain extends ActionBarActivity {
 	});
 
 	mBar.setTitle(R.string.title_activity_main);
-	/*
-	mBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-	mBar.setDisplayShowTitleEnabled(false);
-	mBar.addTab(mBar.newTab().setText("动态")
-		.setTabListener(new PageListener(ViewAdapter.ITEM_FEEDS)));
-	mBar.addTab(mBar.newTab().setText("浏览")
-		.setTabListener(new PageListener(ViewAdapter.ITEM_INDEX)));
-	mBar.addTab(mBar.newTab().setText("我")
-		.setTabListener(new PageListener(ViewAdapter.ITEM_LOGIN)));
-	mBar.selectTab(mBar.getTabAt(ViewAdapter.ITEM_INDEX));
-	*/
-	
-	//Bind the title indicator to the adapter
-	LayoutInflater inflator = (LayoutInflater)getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+	// Bind the title indicator to the adapter
+	LayoutInflater inflator = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	View v = inflator.inflate(R.layout.actionbar_tabs, null);
-	TabPageIndicator indicator = (TabPageIndicator)v.findViewById(R.id.indicator);
+	TabPageIndicator indicator = (TabPageIndicator) v
+		.findViewById(R.id.indicator);
 	indicator.setViewPager(mPager);
 	mBar.setDisplayShowCustomEnabled(true);
 	mBar.setDisplayShowTitleEnabled(false);
 	mBar.setCustomView(v);
+	mPager.setCurrentItem(ViewAdapter.ITEM_INDEX);
     }
 
     void UpdateTabs() {
 	int index = mPager.getCurrentItem();
-	//mBar.selectTab(mBar.getTabAt(index));
+	// mBar.selectTab(mBar.getTabAt(index));
 	switch (index) {
 	case ViewAdapter.ITEM_FEEDS:
 	    mBar.setTitle(R.string.title_fragment_feeds);
@@ -252,10 +241,11 @@ public class ActivityMain extends ActionBarActivity {
 
 	private final String[] CONTENT = new String[] { "动态", "浏览", "我" };
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return CONTENT[position % CONTENT.length].toUpperCase();
-        }
+	@Override
+	public CharSequence getPageTitle(int position) {
+	    return CONTENT[position % CONTENT.length].toUpperCase();
+	}
+
 	@Override
 	public int getCount() {
 	    return ITEM_COUNT;

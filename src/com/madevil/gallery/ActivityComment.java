@@ -114,7 +114,7 @@ class CommentAdapter extends BaseAdapter {
     }
 }
 
-public class ActivityComment extends ActionBarActivity {
+public class ActivityComment extends BasicActivity {
     private CommentAdapter mAdapter = null;
     private ListView mListView = null;
     private DataPicture mPicture = null;

@@ -1,5 +1,6 @@
 package com.madevil.gallery;
 
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -32,6 +33,7 @@ public class ActivityMain extends BasicActivity {
     private DataShare share = null;
     private ActionBar mBar = null;
     private Context mContext = null;
+    private PullToRefreshAttacher mPullToRefreshAttacher;
 
 
     private boolean onPageritemSelected(MenuItem item) {
@@ -121,6 +123,8 @@ public class ActivityMain extends BasicActivity {
 	mBar = getSupportActionBar();
 	mContext = getApplicationContext();
 	share = DataShare.Ins(mContext);
+    // Create a PullToRefreshAttacher instance
+    mPullToRefreshAttacher = PullToRefreshAttacher.get(this);
 
 	// Restore preferences
 	Log.d("ActivityMain", "onCreate(), load DataShare");
@@ -230,7 +234,7 @@ public class ActivityMain extends BasicActivity {
 	public ViewAdapter(FragmentManager fm) {
 	    super(fm);
 	    mFragmentUser = new FragmentUser();
-	    mFragmentIndex = new FragmentIndex();
+	    mFragmentIndex = FragmentIndex.Instance(mPullToRefreshAttacher);
 	    mFragmentFeeds = new FragmentFeeds();
 	    mFragmentLogin = FragmentLogin.Instance(new Callback() {
 		public void call() {

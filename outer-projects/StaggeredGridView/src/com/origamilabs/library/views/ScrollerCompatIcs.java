@@ -28,4 +28,4 @@ class ScrollerCompatIcs {
 	public static float getCurrVelocity(Scroller scroller) {
         return scroller.getCurrVelocity();
     }
-}
+} 

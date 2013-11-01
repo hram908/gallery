@@ -1,12 +1,14 @@
 package com.madevil.gallery;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher.OnRefreshListener;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -22,7 +24,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -112,7 +113,16 @@ public class FragmentIndex extends Fragment {
     private DataShare share = null;
     private int mPage = 0;
     private boolean mReload = false;
+    private PullToRefreshAttacher mPullToRefreshAttacher;
 
+    
+    public static FragmentIndex Instance(PullToRefreshAttacher a) {
+    	FragmentIndex f = new FragmentIndex();
+    	f.mPullToRefreshAttacher= a;
+    	return f;
+    }
+
+    
     @SuppressLint("NewApi")
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -139,10 +149,26 @@ public class FragmentIndex extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	    Bundle savedInstanceState) {
 	View view = inflater.inflate(R.layout.fragment_index, container, false);
+
+    // Retrieve the PullToRefreshLayout from the content view
+    PullToRefreshLayout ptrLayout = (PullToRefreshLayout) view.findViewById(R.id.ptr_layout);
+
+    // Give the PullToRefreshAttacher to the PullToRefreshLayout, along with a refresh listener.
+    ptrLayout.setPullToRefreshAttacher(mPullToRefreshAttacher, new OnRefreshListener() {
+		@Override
+		public void onRefreshStarted(View view) {
+			// TODO Auto-generated method stub
+			Log.e("Refersh", "loading");
+		    mReload = true;
+		    LoadPage();
+		}    	
+    });
+    
+    
 	mContext = this.getActivity().getApplication();
 	mGridView = (StaggeredGridView) view
 		.findViewById(R.id.fragment_index_grid);
-	mGridView.setItemMargin(1, 1, 1, 1); // set the GridView margin
+	mGridView.setItemMargin(1); // set the GridView margin
 	share = DataShare.Ins(mContext);
 
 	mAdapter = new PictureAdapter(mContext);
@@ -207,6 +233,7 @@ public class FragmentIndex extends Fragment {
 	G.http.get(url, new JsonHttpResponseHandler() {
 	    @Override
 	    public void onSuccess(JSONObject json_root) {
+		mPullToRefreshAttacher.setRefreshComplete();
 		if (mPage == 0) {
 		    share.pictures_json = json_root.toString();
 		}
@@ -219,6 +246,7 @@ public class FragmentIndex extends Fragment {
 		e.printStackTrace();
 		String msg = "服务器出错";
 		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+		mPullToRefreshAttacher.setRefreshComplete();
 	    }
 	});
     }

@@ -29,7 +29,7 @@
         android:textSize="48sp" />
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/component_loading_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="细微入致，无比写真" />

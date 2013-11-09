@@ -226,14 +226,12 @@ public class ActivityMain extends BasicActivity {
 	public static final int ITEM_INDEX = 1;
 	public static final int ITEM_LOGIN = 2;
 	public static final int ITEM_COUNT = 3;
-	private FragmentUser mFragmentUser = null;
 	private FragmentIndex mFragmentIndex = null;
 	private FragmentFeeds mFragmentFeeds = null;
 	private FragmentLogin mFragmentLogin = null;
 
 	public ViewAdapter(FragmentManager fm) {
 	    super(fm);
-	    mFragmentUser = new FragmentUser();
 	    mFragmentIndex = FragmentIndex.Instance(mPullToRefreshAttacher);
 	    mFragmentFeeds = new FragmentFeeds();
 	    mFragmentLogin = FragmentLogin.Instance(new Callback() {
@@ -253,7 +251,7 @@ public class ActivityMain extends BasicActivity {
 		return mFragmentFeeds;
 	    case ITEM_LOGIN:
 		if (share.is_login) {
-		    return mFragmentUser;
+		    return FragmentUser.Ins(share.user);
 		} else {
 		    return mFragmentLogin;
 		}

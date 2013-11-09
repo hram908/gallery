@@ -12,7 +12,7 @@ public class G {
 	}
 
 	public static String user(String user, int page_id) {
-	    return HOST + "/me/" + page_id;
+	    return HOST + "/user/" + user + "/info/" + page_id;
 	}
 
 	public static String userAvatar(String user) {

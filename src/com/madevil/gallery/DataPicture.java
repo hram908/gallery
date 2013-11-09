@@ -2,10 +2,14 @@ package com.madevil.gallery;
 
 import java.io.Serializable;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
-public class DataPicture implements Serializable {
-    public static final String intentTag = "com.madevil.picture.object";
+public class DataPicture implements Parcelable {
+    public static final String intent = "com.madevil.DataPicture.object";
+    public static final String intentPictures = "com.madevil.DataPicture.pictures";
+    public static final String intentIndex = "com.madevil.DataPicture.pictures.index";
 
     /**
 	 *
@@ -23,6 +27,10 @@ public class DataPicture implements Serializable {
     private int commentNumber = 0;
     private int likeNumber = 0;
     private int downloadNumber = 0;
+    
+    public DataPicture() {
+	
+    }
 
     public int getHeight() {
 	return height;
@@ -88,36 +96,78 @@ public class DataPicture implements Serializable {
 	this.downloadNumber = downloadNumber;
     }
 
+    private static final String[] tags = { "_s.", "_m.", "." };
 
-    private static final String[] tags = {"_s.", "_m.", "."};
     public void setUrl(String s) {
 	int pos = -1;
 	String tag = "";
-	for ( int i = 0; i < tags.length; ++ i ) {
+	for (int i = 0; i < tags.length; ++i) {
 	    tag = tags[i];
 	    pos = s.lastIndexOf(tag);
-	    if ( pos > 0 ) {
+	    if (pos > 0) {
 		break;
 	    }
 	}
 	url = s.substring(0, pos) + "." + s.substring(pos + tag.length());
 	url_s = s.substring(0, pos) + "_s." + s.substring(pos + tag.length());
 	url_m = s.substring(0, pos) + "_m." + s.substring(pos + tag.length());
-	Log.d("DataPicture", "url="+url);
-	Log.d("DataPicture", "url_s="+url_s);
-	Log.d("DataPicture", "url_m="+url_m);
     }
 
     public String getUrl() {
 	return url;
     }
-    
+
     public String getSmallUrl() {
 	return url_s;
     }
-    
+
     public String getMiddleUrl() {
 	return url_m;
     }
+
+    @Override
+    public int describeContents() {
+	// TODO Auto-generated method stub
+	return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+	dest.writeString(url);
+	dest.writeString(url_m);
+	dest.writeString(url_s);
+	dest.writeString(id);
+	dest.writeString(title);
+	dest.writeString(content);
+	dest.writeInt(height);
+	dest.writeInt(width);
+	dest.writeInt(likeNumber);
+	dest.writeInt(commentNumber);
+	dest.writeInt(downloadNumber);
+    }
+
+    private DataPicture(Parcel in) {
+	url = in.readString();
+	url_m = in.readString();
+	url_s = in.readString();
+	id = in.readString();
+	title = in.readString();
+	content = in.readString();
+	height = in.readInt();
+	width = in.readInt();
+	likeNumber = in.readInt();
+	commentNumber = in.readInt();
+	downloadNumber = in.readInt();
+    }
+
+    public static final Parcelable.Creator<DataPicture> CREATOR = new Parcelable.Creator<DataPicture>() {
+	public DataPicture createFromParcel(Parcel in) {
+	    return new DataPicture(in);
+	}
+
+	public DataPicture[] newArray(int size) {
+	    return new DataPicture[size];
+	}
+    };
 
 }

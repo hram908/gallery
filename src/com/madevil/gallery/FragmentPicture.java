@@ -1,5 +1,6 @@
 package com.madevil.gallery;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONObject;
@@ -36,8 +37,9 @@ public class FragmentPicture extends Fragment {
     private Boolean mUserCommented = false;
     private Boolean mUserDownloaded = false;
 
-    private List<DataPicture> mPictures;
-    private DataPicture mPicture;
+    private int mIndex = 0;
+    private DataPicture mPicture = null;
+    private ArrayList<DataPicture> mPictures = null;
 
     private Button mButtonLike, mButtonComment, mButtonDownload;
     private ImageView mButtonAvatar;
@@ -45,9 +47,8 @@ public class FragmentPicture extends Fragment {
     private ViewPager mViewPager;
     private RelativeLayout mLayout;
     
-    private int mIndex;
 
-    public static FragmentPicture Ins(List<DataPicture> pictures, int index) {
+    public static FragmentPicture Ins(ArrayList<DataPicture> pictures, int index) {
 	FragmentPicture f = new FragmentPicture();
 	f.mPictures = pictures;
 	f.mIndex = index;
@@ -119,6 +120,7 @@ public class FragmentPicture extends Fragment {
 	    }
 	});
 	
+	mPicture = mPictures.get(mIndex);
 	mViewPager.setCurrentItem(mIndex);
 	hide();
 	return view;
@@ -169,9 +171,12 @@ public class FragmentPicture extends Fragment {
 	});
     }
 
+    private boolean lock_btn_like = false;
     public void onClick_detail_btn_like(View v) {
-	mButtonLike.setEnabled(false);
+	if ( lock_btn_like ) return;
+	lock_btn_like = true;
 	String url = G.Url.doPictureLike(mPicture.getId());
+	Log.d("http", "like url="+url);
 	// do request
 	RequestParams params = new RequestParams();
 	if (mUserLiked) {
@@ -182,7 +187,7 @@ public class FragmentPicture extends Fragment {
 	G.http.post(url, params, new JsonHttpResponseHandler() {
 	    @Override
 	    public void onSuccess(JSONObject json_root) {
-		mButtonLike.setEnabled(true);
+		lock_btn_like = false;
 		Log.d("MainActivity.http", "json:" + json_root);
 		try {
 		    int ecode = json_root.getInt("ecode");
@@ -204,7 +209,7 @@ public class FragmentPicture extends Fragment {
 
 	    @Override
 	    public void onFailure(Throwable e, String response) {
-		mButtonLike.setEnabled(true);
+		lock_btn_like = false;
 		Log.e("MianActivity.http", "Exception: " + e.toString());
 		e.printStackTrace();
 		String msg = "服务器出错";
@@ -223,26 +228,24 @@ public class FragmentPicture extends Fragment {
 
     public void onClick_detail_btn_comment(View v) {
 	Intent intent = new Intent(mContext, ActivityComment.class);
-	intent.putExtra(DataPicture.intentTag, mPicture);
+	intent.putExtra(DataPicture.intent, mPicture);
 	this.startActivityForResult(intent, 0);
     }
 
     public void onClick_detail_btn_avatar(View v) {
 	Intent intent = new Intent(mContext, ActivityUser.class);
-	intent.putExtra(DataUser.intentTag, mUser.id);
+	intent.putExtra(DataUser.intent, mUser);
 	this.startActivityForResult(intent, 0);
     }
 
     public void show() {
 	((ActivityDetail) getActivity()).getSupportActionBar().show();
 	mLayout.setVisibility(View.VISIBLE);
-
     }
 
     public void hide() {
 	((ActivityDetail) getActivity()).getSupportActionBar().hide();
 	mLayout.setVisibility(View.GONE);
-
     }
 
     class PicturePagerAdapter extends PagerAdapter {

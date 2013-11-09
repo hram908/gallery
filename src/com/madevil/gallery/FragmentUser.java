@@ -41,18 +41,18 @@ class UserPictureAdapter extends BaseAdapter {
     public static final int TYPE_ITEM = 1;
     public static final int TYPE_COUNT = 2;
 
-    private LinkedList<DataPicture> mPictures;
+    private ArrayList<DataPicture> mPictures;
     private Context mContext;
     private int mUpload = 0;
     private OnClickListener mClick = null;
 
     public UserPictureAdapter(Context context) {
-	mPictures = new LinkedList<DataPicture>();
+	mPictures = new ArrayList<DataPicture>();
 	mContext = context;
     }
 
     public UserPictureAdapter(Context context, int upload, OnClickListener l) {
-	mPictures = new LinkedList<DataPicture>();
+	mPictures = new ArrayList<DataPicture>();
 	mContext = context;
 	mUpload = upload;
 	mClick = l;
@@ -125,9 +125,9 @@ class UserPictureAdapter extends BaseAdapter {
 		@Override
 		public void onClick(View v) {
 		    ViewHolder holder = (ViewHolder) v.getTag();
-		    DataPicture picture = mPictures.get(holder.index);
 		    Intent intent = new Intent(mContext, ActivityDetail.class);
-		    intent.putExtra(DataPicture.intentTag, picture);
+		    intent.putExtra(DataPicture.intentPictures, mPictures);
+		    intent.putExtra(DataPicture.intentIndex, holder.index);
 		    mContext.startActivity(intent);
 		}
 	    });
@@ -144,11 +144,11 @@ class UserPictureAdapter extends BaseAdapter {
     }
 
     public void addFirst(DataPicture picture) {
-	mPictures.addFirst(picture);
+	mPictures.add(0, picture);
     }
 
     public void addLast(DataPicture picture) {
-	mPictures.addLast(picture);
+	mPictures.add(picture);
     }
 }
 
@@ -164,6 +164,7 @@ public class FragmentUser extends Fragment {
     private Button mButtonPicture = null;
     private Context mContext = null;
     private ProgressDialog mDialog = null;
+    private ImageView mUserAvatar = null;
 
     public String getGalleryPath(Uri uri) {
 	String[] projection = { MediaStore.Images.Media.DATA };
@@ -201,6 +202,12 @@ public class FragmentUser extends Fragment {
 	    return super.onOptionsItemSelected(item);
 	}
     }
+    
+    public static FragmentUser Ins(DataUser user) {
+	FragmentUser f = new FragmentUser();
+	f.mUser = user;
+	return f;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -212,15 +219,7 @@ public class FragmentUser extends Fragment {
 	share = DataShare.Ins(mContext);
 
 	// 读取用户信息
-	mUser.id = share.user.id;
-	if (getArguments() != null) {
-	    String uid = getArguments().getString("user.id");
-	    if (uid != "") {
-		mUser.id = uid;
-	    }
-	}
-	Log.d("UserActivity", "user: " + mUser.id);
-
+	Log.i("UserActivity", "user_id=" + mUser.id + ", nick="+mUser.nick);
 	if (mUser.id == share.user.id) {
 	    // 构造图片转换器
 	    mUserPictureAdapter = new UserPictureAdapter(mContext, 1,
@@ -246,6 +245,11 @@ public class FragmentUser extends Fragment {
 	mTextIntro = (TextView) view.findViewById(R.id.user_text_intro);
 	mButtonMoney = (Button) view.findViewById(R.id.user_btn_money);
 	mButtonPicture = (Button) view.findViewById(R.id.user_btn_picture);
+	
+	mUserAvatar = (ImageView) view.findViewById(R.id.user_image_avatar);
+	Picasso.with(mContext).load(G.Url.userAvatar(mUser.id)).into(mUserAvatar);
+	
+	updateScreenInfo();
 
 	// 异步发起读取用户信息的操作
 	// do request
@@ -306,15 +310,17 @@ public class FragmentUser extends Fragment {
 	    String msg = "服务器返回的数据无效";
 	    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	}
+	updateScreenInfo();
 	mUserPictureAdapter.addItems(mPictures);
 	mUserPictureAdapter.notifyDataSetChanged();
+    }
+    
+    public void updateScreenInfo() {
 	mTextNick.setText(mUser.nick);
 	mTextIntro.setText(mUser.intro);
 	mButtonMoney.setText("" + mUser.moneyNumber);
 	mButtonPicture.setText("" + mUser.pictureNumber);
-
-	mUserPictureAdapter.addItems(mPictures);
-	mUserPictureAdapter.notifyDataSetChanged();
+	
     }
 
     public void onSuccessUpload(JSONObject json_root) {

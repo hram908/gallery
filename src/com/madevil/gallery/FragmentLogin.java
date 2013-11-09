@@ -115,7 +115,7 @@ public class FragmentLogin extends Fragment {
 	    public void onComplete(JSONObject result) {
 		Log.d("Login", "onComplete");
 		try {
-		    share.user.id = "qq_" + result.getString("openid");
+		    share.user.id = result.getString("openid");
 		    share.login_info = result.toString();
 		    share.is_login = true;
 		    Log.d("Data", "tencent.login_info=" + share.login_info);

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android" >
     <item
-        android:state_pressed="false"
-        android:drawable="@android:drawable/btn_star_big_off" />
-    <item
         android:state_pressed="true"
-        android:drawable="@android:drawable/btn_star_big_on" />
+        android:drawable="@drawable/ic_timeline_like_highlight" />
     <item
         android:state_focused="true"
-        android:drawable="@android:drawable/btn_star_big_on" />
+        android:drawable="@drawable/ic_timeline_like_highlight" />
     <item
-        android:drawable="@android:drawable/btn_star_big_off" />
+        android:state_pressed="false"
+        android:drawable="@drawable/ic_timeline_like" />
+    <item
+        android:drawable="@drawable/ic_timeline_like" />
 </selector>

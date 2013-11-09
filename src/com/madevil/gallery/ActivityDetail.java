@@ -1,10 +1,12 @@
 package com.madevil.gallery;
 
+import java.util.ArrayList;
+
 import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
@@ -31,9 +33,11 @@ public class ActivityDetail extends BasicActivity {
 	getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	DataShare share = DataShare.Ins(getApplicationContext());
 	
-	Integer index = getIntent().getIntExtra("index", 0);
+	int index = getIntent().getIntExtra(DataPicture.intentIndex, 0);
+	ArrayList<DataPicture> pictures = getIntent().getParcelableArrayListExtra(DataPicture.intentPictures);	
+	Log.d("ActivityDetail", "pictures.size=" + pictures.size() + ", index=" + index);
 	
-        FragmentPicture f = FragmentPicture.Ins(share.pictures, index);
+        FragmentPicture f = FragmentPicture.Ins(pictures, index);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(android.R.id.content, f).commit();
     }

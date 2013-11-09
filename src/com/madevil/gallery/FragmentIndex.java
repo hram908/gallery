@@ -22,9 +22,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -34,9 +34,11 @@ import com.squareup.picasso.Picasso;
 
 class PictureAdapter extends BaseAdapter {
     private DataShare share = null;
+    private int mItemWidth = 0;
 
-    public PictureAdapter(Context c) {
+    public PictureAdapter(Context c, int itemWidth) {
 	share = DataShare.Ins(c);
+	mItemWidth = itemWidth;
     }
 
     class ViewHolder {
@@ -78,9 +80,8 @@ class PictureAdapter extends BaseAdapter {
 		    DataPicture picture = share.pictures.get(holder.index);
 		    Intent intent = new Intent(v.getContext(),
 			    ActivityDetail.class);
-		    intent.putExtra(DataPicture.intentTag, picture);
-		    intent.putExtra("index", holder.index);
-		    share.picture_index = holder.index;
+		    intent.putExtra(DataPicture.intentPictures, share.pictures);
+		    intent.putExtra(DataPicture.intentIndex, holder.index);
 		    v.getContext().startActivity(intent);
 		    Log.d("PictureAdapter", "onClick() index=" + holder.index
 			    + ", id=" + picture.getId());
@@ -89,12 +90,11 @@ class PictureAdapter extends BaseAdapter {
 	}
 
 	DataPicture picture = share.pictures.get(index);
-	int height = picture.getHeight();
-	int width = LinearLayout.LayoutParams.MATCH_PARENT;
+	int height = picture.getHeight() * mItemWidth / picture.getWidth();
+	int width = LayoutParams.MATCH_PARENT;
+	Log.d("FragmentIndex", "height="+height+", orig height="+picture.getHeight() + ", item width="+mItemWidth);
 	ViewHolder holder = (ViewHolder) view.getTag();
-	holder.imageView.setLayoutParams(new LinearLayout.LayoutParams(width,
-		height));
-	// holder.contentView.setText(picture.getTitle());
+	holder.imageView.setLayoutParams(new LayoutParams(width, height));
 	Context c = parent.getContext();
 	Picasso.with(c).load(picture.getSmallUrl()).into(holder.imageView);
 	return view;
@@ -117,6 +117,8 @@ public class FragmentIndex extends Fragment {
     private int mPage = 0;
     private boolean mReload = false;
     private PullToRefreshAttacher mPullToRefreshAttacher;
+    private View mFooter = null;
+    private int mItemWidth = 0;
 
     public static FragmentIndex Instance(PullToRefreshAttacher a) {
 	FragmentIndex f = new FragmentIndex();
@@ -172,16 +174,18 @@ public class FragmentIndex extends Fragment {
 		.findViewById(R.id.fragment_index_grid);
 	mGridView.setItemMargin(1); // set the GridView margin
 
-	View footerView = inflater.inflate(R.layout.component_loading, null);
-	mGridView.setFooterView(footerView);
-	mGridView.setOnLoadmoreListener(new OnLoadmoreListener(){
+	mFooter = inflater.inflate(R.layout.component_loading, null);
+	mGridView.setFooterView(mFooter);
+	mGridView.setOnLoadmoreListener(new OnLoadmoreListener() {
 	    @Override
 	    public void onLoadmore() {
 		loadmore();
 	    }
 	});
 
-	mAdapter = new PictureAdapter(mContext);
+	mItemWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth();
+	mItemWidth = mItemWidth / mGridView.getColumnCount() + 2;
+	mAdapter = new PictureAdapter(mContext, mItemWidth);
 	mGridView.setAdapter(mAdapter);
 
 	if (share.pictures_json.length() == 0) {
@@ -225,6 +229,13 @@ public class FragmentIndex extends Fragment {
 	    String msg = "服务器返回的数据无效";
 	    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	}
+	if (items.size() == 0) {
+	    mFooter.findViewById(R.id.component_loading_progress)
+		    .setVisibility(View.INVISIBLE);
+	    TextView t = (TextView) mFooter
+		    .findViewById(R.id.component_loading_text);
+	    t.setText("没有更多了");
+	}
 	if (mReload) {
 	    mAdapter.clear();
 	    mReload = false;
@@ -233,11 +244,11 @@ public class FragmentIndex extends Fragment {
 	mAdapter.addItems(items);
 	mAdapter.notifyDataSetChanged();
     }
-    
+
     private void refresh() {
 	mPage = 0;
 	mReload = true;
-	loadmore();	
+	loadmore();
     }
 
     private void loadmore() {

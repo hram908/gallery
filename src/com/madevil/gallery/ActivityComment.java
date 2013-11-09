@@ -31,10 +31,10 @@ import com.squareup.picasso.Picasso;
 
 class DataComment {
     public String id = "";
-    public String user = "";
     public String user_nick = "";
     public String time = "";
     public String content = "";
+    public DataUser user = new DataUser();
 }
 
 class CommentAdapter extends BaseAdapter {
@@ -97,7 +97,7 @@ class CommentAdapter extends BaseAdapter {
 		    int index = (Integer) v.getTag();
 		    DataComment comment = mComments.get(index);
 		    Intent intent = new Intent(mContext, ActivityUser.class);
-		    intent.putExtra(DataUser.intentTag, comment.user);
+		    intent.putExtra(DataUser.intent, comment.user);
 		    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		    mContext.startActivity(intent);
 		}
@@ -108,7 +108,8 @@ class CommentAdapter extends BaseAdapter {
 	DataComment comment = mComments.get(index);
 	ViewHolder holder = (ViewHolder) view.getTag();
 	holder.contentView.setText(comment.content);
-	String avatar_url = G.Url.userAvatar(comment.user);
+	String avatar_url = G.Url.userAvatar(comment.user.id);
+	Log.d("http", "avatar url="+avatar_url);
 	Picasso.with(mContext).load(avatar_url).into(holder.avatarView);
 	return view;
     }
@@ -141,8 +142,7 @@ public class ActivityComment extends BasicActivity {
 	mAdapter.notifyDataSetChanged();
 
 	Intent intent = getIntent();
-	mPicture = (DataPicture) intent
-		.getSerializableExtra(DataPicture.intentTag);
+	mPicture = intent.getParcelableExtra(DataPicture.intent);
 
 	G.http.get(G.Url.pictureComment(mPicture.getId()),
 		new JsonHttpResponseHandler() {
@@ -195,7 +195,7 @@ public class ActivityComment extends BasicActivity {
 	// save to mem
 	mMyComment = new DataComment();
 	mMyComment.id = "";
-	mMyComment.user = share.user.id;
+	mMyComment.user = share.user;
 	mMyComment.content = text;
 
 	RequestParams params = new RequestParams();
@@ -237,7 +237,7 @@ public class ActivityComment extends BasicActivity {
 		JSONObject obj = json_comments.getJSONObject(i);
 		DataComment c = new DataComment();
 		c.id = "";
-		c.user = obj.getString("userid");
+		c.user.id = obj.getString("userid");
 		c.content = obj.getString("content");
 		c.user_nick = obj.getString("nick");
 		c.time = obj.getString("time");

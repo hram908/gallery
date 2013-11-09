@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="70dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/component_loading"
+    android:layout_width="match_parent"
+    android:layout_height="70dp"
+    android:gravity="center"
+    android:orientation="vertical" >
 
     <ProgressBar
+        android:id="@+id/component_loading_progress"
         android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:layout_centerInParent="true"/>
+        android:layout_height="48dp" />
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/component_loading_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="32dp"
+        android:text="加载中" />
+
+</LinearLayout>

@@ -1,10 +1,13 @@
 package com.madevil.gallery;
 
+import java.util.ArrayList;
+
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -25,10 +28,12 @@ public class ActivityUser extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	
+	DataUser user = getIntent().getParcelableExtra(DataUser.intent);
 
 	FragmentManager fm = this.getSupportFragmentManager();
 	FragmentTransaction ft = fm.beginTransaction();
-	FragmentUser f = new FragmentUser();
+	FragmentUser f = FragmentUser.Ins(user);
 	ft.add(android.R.id.content, f);
 	ft.commit();
     }

@@ -2,16 +2,13 @@ package com.madevil.gallery;
 
 import org.json.JSONObject;
 
+import uk.co.senab.photoview.PhotoViewAttacher;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -23,7 +20,6 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
 
-
 public class FragmentPicture extends Fragment {
     private DataUser mUser = new DataUser();
     private Boolean mUserLiked = false;
@@ -32,23 +28,26 @@ public class FragmentPicture extends Fragment {
     private DataPicture mPicture = null;
     private Button mButtonLike, mButtonComment, mButtonDownload;
     private ImageView mButtonAvatar = null;
+    private ImageView mImage = null;
     private Context mContext = null;
-    
+    private PhotoViewAttacher mPhoto = null;
+
     public static FragmentPicture Ins(DataPicture picture) {
 	FragmentPicture f = new FragmentPicture();
 	f.mPicture = picture;
 	return f;
     }
-    
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	    Bundle savedInstanceState) {
-	View view = inflater.inflate(R.layout.fragment_picture, container, false);
+	View view = inflater.inflate(R.layout.fragment_picture, container,
+		false);
 	mContext = this.getActivity().getApplication();
+	mImage = (ImageView) view.findViewById(R.id.detail_image);
+	mPhoto = new PhotoViewAttacher(mImage);
 
-	Picasso.with(mContext)
-		.load(mPicture.getMiddleUrl())
-		.into((ImageView) view.findViewById(R.id.detail_image));
+	Picasso.with(mContext).load(mPicture.getMiddleUrl()).into(mImage);
 
 	Log.d("PictureAdapter", "onCreate() id=" + mPicture.getId());
 
@@ -60,27 +59,27 @@ public class FragmentPicture extends Fragment {
 		.setText(String.format("%s", mPicture.getCommentNumber()));
 	mButtonDownload.setText(String.format("%s",
 		mPicture.getDownloadNumber()));
-	
+
 	mButtonLike.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View arg0) {
 		onClick_detail_btn_like(arg0);
-	    }	    
+	    }
 	});
 	mButtonComment.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View arg0) {
 		onClick_detail_btn_comment(arg0);
-	    }	    
+	    }
 	});
 	mButtonDownload.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View arg0) {
 		onClick_detail_btn_download(arg0);
-	    }	    
+	    }
 	});
-	
-	mButtonAvatar = (ImageView)view.findViewById(R.id.detail_btn_avatar);
+
+	mButtonAvatar = (ImageView) view.findViewById(R.id.detail_btn_avatar);
 	mButtonAvatar.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View v) {
@@ -99,8 +98,8 @@ public class FragmentPicture extends Fragment {
 		    if (ecode != 0) {
 			String msg = "" + ecode + "."
 				+ json_root.optString("msg", "系统繁忙，请休息一下再来～");
-			Toast.makeText(mContext, msg,
-				Toast.LENGTH_SHORT).show();
+			Toast.makeText(mContext, msg, Toast.LENGTH_SHORT)
+				.show();
 			return;
 		    }
 		    JSONObject obj = json_root.getJSONObject("data");
@@ -112,8 +111,7 @@ public class FragmentPicture extends Fragment {
 		} catch (Exception e) {
 		    Log.e("DetailActivity.http", "exception:" + e.toString());
 		    String msg = "服务器返回的数据无效";
-		    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT)
-			    .show();
+		    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 		}
 		mButtonLike.setPressed(mUserLiked);
 		mButtonComment.setPressed(mUserCommented);
@@ -126,8 +124,7 @@ public class FragmentPicture extends Fragment {
 		Log.e("MianActivity.http", "Exception: " + e.toString());
 		e.printStackTrace();
 		String msg = "服务器出错";
-		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT)
-			.show();
+		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	    }
 
 	});
@@ -157,14 +154,13 @@ public class FragmentPicture extends Fragment {
 		    if (ecode == 0) {
 			mUserLiked = !mUserLiked;
 		    } else {
-			Toast.makeText(mContext, msg,
-				Toast.LENGTH_SHORT).show();
+			Toast.makeText(mContext, msg, Toast.LENGTH_SHORT)
+				.show();
 		    }
 		} catch (Exception e) {
 		    Log.e("MainActivity.http", "exception:" + e.toString());
 		    String msg = "服务器返回的数据无效";
-		    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT)
-			    .show();
+		    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 		}
 		mButtonLike.setPressed(mUserLiked);
 	    }
@@ -175,8 +171,7 @@ public class FragmentPicture extends Fragment {
 		Log.e("MianActivity.http", "Exception: " + e.toString());
 		e.printStackTrace();
 		String msg = "服务器出错";
-		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT)
-			.show();
+		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	    }
 
 	});

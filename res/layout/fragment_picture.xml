@@ -20,8 +20,7 @@
                 android:id="@+id/detail_image"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:scaleType="centerInside"/>
-
+                android:scaleType="centerInside" />
         </LinearLayout>
 
         <RelativeLayout
@@ -69,7 +68,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
                 android:src="@drawable/default_avatar" />
-
         </RelativeLayout>
     </LinearLayout>
 

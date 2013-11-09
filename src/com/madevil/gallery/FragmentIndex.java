@@ -22,12 +22,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.origamilabs.library.views.StaggeredGridView;
+import com.origamilabs.library.views.StaggeredGridView.OnLoadmoreListener;
 import com.squareup.picasso.Picasso;
 
 class PictureAdapter extends BaseAdapter {
@@ -78,9 +80,10 @@ class PictureAdapter extends BaseAdapter {
 			    ActivityDetail.class);
 		    intent.putExtra(DataPicture.intentTag, picture);
 		    intent.putExtra("index", holder.index);
+		    share.picture_index = holder.index;
 		    v.getContext().startActivity(intent);
-		    Log.d("PictureAdapter", "onClick() index="
-			    + holder.index + ", id=" + picture.getId());
+		    Log.d("PictureAdapter", "onClick() index=" + holder.index
+			    + ", id=" + picture.getId());
 		}
 	    });
 	}
@@ -115,14 +118,12 @@ public class FragmentIndex extends Fragment {
     private boolean mReload = false;
     private PullToRefreshAttacher mPullToRefreshAttacher;
 
-    
     public static FragmentIndex Instance(PullToRefreshAttacher a) {
-    	FragmentIndex f = new FragmentIndex();
-    	f.mPullToRefreshAttacher= a;
-    	return f;
+	FragmentIndex f = new FragmentIndex();
+	f.mPullToRefreshAttacher = a;
+	return f;
     }
 
-    
     @SuppressLint("NewApi")
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -137,8 +138,7 @@ public class FragmentIndex extends Fragment {
 	// Handle item selection
 	switch (item.getItemId()) {
 	case R.id.menu_refresh:
-	    mReload = true;
-	    LoadPage();
+	    refresh();
 	    return true;
 	default:
 	    return super.onOptionsItemSelected(item);
@@ -150,32 +150,42 @@ public class FragmentIndex extends Fragment {
 	    Bundle savedInstanceState) {
 	View view = inflater.inflate(R.layout.fragment_index, container, false);
 
-    // Retrieve the PullToRefreshLayout from the content view
-    PullToRefreshLayout ptrLayout = (PullToRefreshLayout) view.findViewById(R.id.ptr_layout);
+	// Retrieve the PullToRefreshLayout from the content view
+	PullToRefreshLayout ptrLayout = (PullToRefreshLayout) view
+		.findViewById(R.id.ptr_layout);
 
-    // Give the PullToRefreshAttacher to the PullToRefreshLayout, along with a refresh listener.
-    ptrLayout.setPullToRefreshAttacher(mPullToRefreshAttacher, new OnRefreshListener() {
-		@Override
-		public void onRefreshStarted(View view) {
+	// Give the PullToRefreshAttacher to the PullToRefreshLayout, along with
+	// a refresh listener.
+	ptrLayout.setPullToRefreshAttacher(mPullToRefreshAttacher,
+		new OnRefreshListener() {
+		    @Override
+		    public void onRefreshStarted(View view) {
 			// TODO Auto-generated method stub
 			Log.e("Refersh", "loading");
-		    mReload = true;
-		    LoadPage();
-		}    	
-    });
-    
-    
+			refresh();
+		    }
+		});
+
 	mContext = this.getActivity().getApplication();
+	share = DataShare.Ins(mContext);
 	mGridView = (StaggeredGridView) view
 		.findViewById(R.id.fragment_index_grid);
 	mGridView.setItemMargin(1); // set the GridView margin
-	share = DataShare.Ins(mContext);
+
+	View footerView = inflater.inflate(R.layout.component_loading, null);
+	mGridView.setFooterView(footerView);
+	mGridView.setOnLoadmoreListener(new OnLoadmoreListener(){
+	    @Override
+	    public void onLoadmore() {
+		loadmore();
+	    }
+	});
 
 	mAdapter = new PictureAdapter(mContext);
 	mGridView.setAdapter(mAdapter);
 
 	if (share.pictures_json.length() == 0) {
-	    LoadPage();
+	    loadmore();
 	} else {
 	    try {
 		JSONObject json_root = new JSONObject(share.pictures_json);
@@ -218,13 +228,19 @@ public class FragmentIndex extends Fragment {
 	if (mReload) {
 	    mAdapter.clear();
 	    mReload = false;
-	    mPage = 0;
 	}
+	mPage += 1;
 	mAdapter.addItems(items);
 	mAdapter.notifyDataSetChanged();
     }
+    
+    private void refresh() {
+	mPage = 0;
+	mReload = true;
+	loadmore();	
+    }
 
-    private void LoadPage() {
+    private void loadmore() {
 	String url = G.Url.index(mPage);
 	Log.d("MainActivity.http", "current url:" + url);
 

@@ -44,10 +44,13 @@ public class FragmentPicture extends Fragment {
     private Context mContext;
     private ViewPager mViewPager;
     private RelativeLayout mLayout;
+    
+    private int mIndex;
 
-    public static FragmentPicture Ins(List<DataPicture> pictures) {
+    public static FragmentPicture Ins(List<DataPicture> pictures, int index) {
 	FragmentPicture f = new FragmentPicture();
 	f.mPictures = pictures;
+	f.mIndex = index;
 	return f;
     }
 
@@ -58,7 +61,6 @@ public class FragmentPicture extends Fragment {
 		false);
 	mContext = this.getActivity().getApplication();
 	mLayout = (RelativeLayout) view.findViewById(R.id.detail_bar_info);
-	hide();
 
 	mButtonLike = (Button) view.findViewById(R.id.detail_btn_like);
 	mButtonComment = (Button) view.findViewById(R.id.detail_btn_comment);
@@ -105,6 +107,7 @@ public class FragmentPicture extends Fragment {
 
 	    @Override
 	    public void onPageSelected(int position) {
+		Log.d("ActivityDetail", "onPageSelected");
 		mPicture = mPictures.get(position);
 		mButtonLike.setText(String.format("%s",
 			mPicture.getLikeNumber()));
@@ -112,10 +115,12 @@ public class FragmentPicture extends Fragment {
 			mPicture.getCommentNumber()));
 		mButtonDownload.setText(String.format("%s",
 			mPicture.getDownloadNumber()));
-		loadPictureInfo(mPicture.getMiddleUrl());
+		loadPictureInfo(G.Url.pictureInfo(mPicture.getId()));
 	    }
 	});
-
+	
+	mViewPager.setCurrentItem(mIndex);
+	hide();
 	return view;
     }
 
@@ -148,7 +153,9 @@ public class FragmentPicture extends Fragment {
 		mButtonLike.setPressed(mUserLiked);
 		mButtonComment.setPressed(mUserCommented);
 		mButtonDownload.setPressed(mUserDownloaded);
-
+		String url = G.Url.userAvatar(mUser.id);
+		Log.d("ActivityDetail", "avatar url=" + url);
+		Picasso.with(mContext).load(url).into(mButtonAvatar);
 	    }
 
 	    @Override

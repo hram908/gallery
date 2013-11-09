@@ -57,12 +57,18 @@
                 android:text="789" />
         </LinearLayout>
 
-        <ImageView
-            android:id="@+id/detail_btn_avatar"
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
-            android:src="@drawable/default_avatar" />
+            android:padding="2dp" >
+
+            <ImageView
+                android:id="@+id/detail_btn_avatar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/default_avatar" />
+        </LinearLayout>
     </RelativeLayout>
 
 </RelativeLayout>

@@ -13,7 +13,7 @@
     <string name="title_activity_comment">评论</string>
     <string name="title_activity_user">用户</string>
     <string name="title_fragment_index">首页</string>
-    <string name="title_fragment_feeds">动态</string>
+    <string name="title_fragment_feeds">推荐</string>
     <string name="title_fragment_user">用户</string>
     <string name="title_fragment_login">登陆</string>
     <string name="title_fragment_user">用户</string>

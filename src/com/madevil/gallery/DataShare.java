@@ -33,6 +33,7 @@ public class DataShare implements Serializable {
     public PersistentCookieStore http_cookies = null; // http cookies
     public DataUser user = new DataUser(); // current user
     public String pictures_json = "";
+    public int picture_index;
 
     public LinkedList<DataPicture> pictures = new LinkedList<DataPicture>();
     //public LinkedList<DataPicture> pictures_user = new LinkedList<DataPicture>();

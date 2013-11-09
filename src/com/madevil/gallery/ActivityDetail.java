@@ -31,7 +31,9 @@ public class ActivityDetail extends BasicActivity {
 	getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	DataShare share = DataShare.Ins(getApplicationContext());
 	
-        FragmentPicture f = FragmentPicture.Ins(share.pictures);
+	Integer index = getIntent().getIntExtra("index", 0);
+	
+        FragmentPicture f = FragmentPicture.Ins(share.pictures, index);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
         ft.add(android.R.id.content, f).commit();
     }

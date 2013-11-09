@@ -11,13 +11,36 @@
         android:layout_height="fill_parent"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
         android:gravity="right" >
 
         <com.viewpagerindicator.TabPageIndicator
             android:id="@+id/indicator"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1" >
+        </com.viewpagerindicator.TabPageIndicator>
+        
+        <!-- 
+        <ImageButton
+            android:id="@+id/actionbar_compose"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="#00000000"
+            android:src="@drawable/ic_actionbar_compose" >
+
+        </ImageButton>
+
+        <ProgressBar
+            android:id="@+id/actionbar_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_gravity="center"
+            android:indeterminate="true"
+            android:indeterminateDrawable="@drawable/progress_medium_holo"
+            android:visibility="gone" >
+        </ProgressBar>
+         -->
     </LinearLayout>
 
 </RelativeLayout>

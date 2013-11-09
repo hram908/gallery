@@ -2,8 +2,9 @@
 
     <item
         android:id="@+id/menu_refresh"
+        android:icon="@drawable/ic_actionbar_refresh"
         android:orderInCategory="1"
-        android:showAsAction="never"
+        android:showAsAction="ifRoom"
         android:title="@string/menu_refresh">
     </item>
 

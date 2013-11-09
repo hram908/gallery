@@ -14,6 +14,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.database.DataSetObserver;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -35,8 +36,12 @@ import android.widget.Toast;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapper;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapter;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleAdapter;
 
-class UserPictureAdapter extends BaseAdapter {
+class UserPictureAdapter implements StickyGridHeadersSimpleAdapter {
     public static final int TYPE_UPLOAD = 0;
     public static final int TYPE_ITEM = 1;
     public static final int TYPE_COUNT = 2;
@@ -45,15 +50,20 @@ class UserPictureAdapter extends BaseAdapter {
     private Context mContext;
     private int mUpload = 0;
     private OnClickListener mClick = null;
+    private View mHeadView = null;
+    private DataSetObserver ob = null;
 
-    public UserPictureAdapter(Context context) {
+    public UserPictureAdapter(Context context, View h) {
 	mPictures = new ArrayList<DataPicture>();
 	mContext = context;
+	mHeadView = h;
     }
 
-    public UserPictureAdapter(Context context, int upload, OnClickListener l) {
+    public UserPictureAdapter(Context context, View h, int upload,
+	    OnClickListener l) {
 	mPictures = new ArrayList<DataPicture>();
 	mContext = context;
+	mHeadView = h;
 	mUpload = upload;
 	mClick = l;
     }
@@ -88,21 +98,19 @@ class UserPictureAdapter extends BaseAdapter {
     }
 
     class ViewHolder {
-	ImageView imageView;
+	ImageView image;
 	int index;
     }
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
-	Log.d("PictureAdapter", "pos=" + position + "view=" + view);
 	int type = getItemViewType(position);
 	if (type == TYPE_UPLOAD) {
-	    ViewHolder holder = null;
 	    if (view == null) {
 		LayoutInflater inflater = LayoutInflater.from(parent
 			.getContext());
 		view = inflater.inflate(R.layout.component_upload, null);
-		view.setTag(holder);
+		view.setTag((Integer) position);
 		ImageButton btn = (ImageButton) view
 			.findViewById(R.id.user_btn_upload);
 		btn.setOnClickListener(mClick);
@@ -114,33 +122,36 @@ class UserPictureAdapter extends BaseAdapter {
 	// / normal pictures
 	int index = position - mUpload;
 	if (view == null) {
+	    //Log.i("adapter.user", "build view index=" + index);
 	    LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 	    view = inflater.inflate(R.layout.component_picture_fixed, null);
-	    ViewHolder holder = new ViewHolder();
-	    holder.index = index;
-	    holder.imageView = (ImageView) view
-		    .findViewById(R.id.component_picture_fixed_image);
-	    view.setTag(holder);
 	    view.setOnClickListener(new View.OnClickListener() {
 		@Override
 		public void onClick(View v) {
-		    ViewHolder holder = (ViewHolder) v.getTag();
+		    ImageView image = (ImageView) v
+			    .findViewById(R.id.component_picture_fixed_image);
+		    int index = (Integer) image.getTag();
 		    Intent intent = new Intent(mContext, ActivityDetail.class);
 		    intent.putExtra(DataPicture.intentPictures, mPictures);
-		    intent.putExtra(DataPicture.intentIndex, holder.index);
+		    intent.putExtra(DataPicture.intentIndex, index);
 		    mContext.startActivity(intent);
 		}
 	    });
 	}
 
 	DataPicture picture = mPictures.get(index);
-	ViewHolder holder = (ViewHolder) view.getTag();
-	Picasso.with(mContext).load(picture.getSmallUrl()).into(holder.imageView);
+	ImageView image = (ImageView) view
+		.findViewById(R.id.component_picture_fixed_image);
+	image.setTag((Integer) index);
+	Picasso.with(mContext).load(picture.getSmallUrl()).into(image);
 	return view;
     }
 
     public void addItems(List<DataPicture> datas) {
-	mPictures.addAll(datas);
+	Log.i("data.pictures", "addItems(), n=" + datas.size());
+	for (int i = 0; i < datas.size(); ++i) {
+	    mPictures.add(datas.get(i));
+	}
     }
 
     public void addFirst(DataPicture picture) {
@@ -150,6 +161,52 @@ class UserPictureAdapter extends BaseAdapter {
     public void addLast(DataPicture picture) {
 	mPictures.add(picture);
     }
+
+    @Override
+    public boolean areAllItemsEnabled() {
+	return true;
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+	return true;
+    }
+
+    @Override
+    public boolean hasStableIds() {
+	return false;
+    }
+
+    @Override
+    public boolean isEmpty() {
+	return false;
+    }
+
+    @Override
+    public void registerDataSetObserver(DataSetObserver observer) {
+	ob = observer;
+    }
+
+    @Override
+    public void unregisterDataSetObserver(DataSetObserver observer) {
+	if (ob == observer)
+	    ob = null;
+    }
+
+    @Override
+    public long getHeaderId(int position) {
+	return 0;
+    }
+
+    @Override
+    public View getHeaderView(int position, View view, ViewGroup parent) {
+	return mHeadView;
+    }
+
+    public void notifyDataSetChanged() {
+	ob.onChanged();
+    }
+
 }
 
 public class FragmentUser extends Fragment {
@@ -157,7 +214,7 @@ public class FragmentUser extends Fragment {
     private DataShare share = null;
     private DataUser mUser = new DataUser();
     private UserPictureAdapter mUserPictureAdapter = null;
-    private GridView mGridView = null;
+    private StickyGridHeadersGridView mGridView = null;
     private TextView mTextNick = null;
     private TextView mTextIntro = null;
     private Button mButtonMoney = null;
@@ -165,6 +222,7 @@ public class FragmentUser extends Fragment {
     private Context mContext = null;
     private ProgressDialog mDialog = null;
     private ImageView mUserAvatar = null;
+    private View mHeaderView = null;
 
     public String getGalleryPath(Uri uri) {
 	String[] projection = { MediaStore.Images.Media.DATA };
@@ -202,7 +260,7 @@ public class FragmentUser extends Fragment {
 	    return super.onOptionsItemSelected(item);
 	}
     }
-    
+
     public static FragmentUser Ins(DataUser user) {
 	FragmentUser f = new FragmentUser();
 	f.mUser = user;
@@ -218,11 +276,15 @@ public class FragmentUser extends Fragment {
 	mContext = view.getContext();
 	share = DataShare.Ins(mContext);
 
+	mHeaderView = inflater.inflate(R.layout.component_user, container,
+		false);
+	View h = mHeaderView;
+
 	// 读取用户信息
-	Log.i("UserActivity", "user_id=" + mUser.id + ", nick="+mUser.nick);
+	Log.i("UserActivity", "user_id=" + mUser.id + ", nick=" + mUser.nick);
 	if (mUser.id == share.user.id) {
 	    // 构造图片转换器
-	    mUserPictureAdapter = new UserPictureAdapter(mContext, 1,
+	    mUserPictureAdapter = new UserPictureAdapter(mContext, h, 1,
 		    new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -231,35 +293,44 @@ public class FragmentUser extends Fragment {
 			}
 		    });
 	} else {
-	    mUserPictureAdapter = new UserPictureAdapter(mContext);
+	    mUserPictureAdapter = new UserPictureAdapter(mContext, h);
 	}
 	Log.d("UserActivity", "mAdapter=" + mUserPictureAdapter);
 
-	mGridView = (GridView) view.findViewById(R.id.user_view_grid);
+	mGridView = (StickyGridHeadersGridView) view
+		.findViewById(R.id.user_view_grid);
 	mGridView.setAdapter(mUserPictureAdapter);
-
-	// 添加一个默认的按钮
+	mGridView.setAreHeadersSticky(false);
 	mUserPictureAdapter.notifyDataSetChanged();
 
-	mTextNick = (TextView) view.findViewById(R.id.user_text_nick);
-	mTextIntro = (TextView) view.findViewById(R.id.user_text_intro);
-	mButtonMoney = (Button) view.findViewById(R.id.user_btn_money);
-	mButtonPicture = (Button) view.findViewById(R.id.user_btn_picture);
-	
-	mUserAvatar = (ImageView) view.findViewById(R.id.user_image_avatar);
-	Picasso.with(mContext).load(G.Url.userAvatar(mUser.id)).into(mUserAvatar);
-	
-	updateScreenInfo();
+	mTextNick = (TextView) h.findViewById(R.id.user_text_nick);
+	mTextIntro = (TextView) h.findViewById(R.id.user_text_intro);
+	mButtonMoney = (Button) h.findViewById(R.id.user_btn_money);
+	mButtonPicture = (Button) h.findViewById(R.id.user_btn_picture);
+	mUserAvatar = (ImageView) h.findViewById(R.id.user_image_avatar);
+	Picasso.with(mContext).load(G.Url.userAvatar(mUser.id))
+		.into(mUserAvatar);
 
 	// 异步发起读取用户信息的操作
+	updateScreenInfo();
+	getUserInfo();
+	return view;
+    }
+
+    private int mPage = 0;
+
+    public void getUserInfo() {
 	// do request
-	String url = G.Url.user(mUser.id, 0);
+	String url = G.Url.user(mUser.id, mPage);
 	Log.d("UserActivity.http", "url=" + url);
 	G.http.setCookieStore(share.http_cookies);
 	G.http.get(url, new JsonHttpResponseHandler() {
 	    @Override
 	    public void onSuccess(JSONObject json_root) {
-		onSuccessGetUser(json_root);
+		if (onSuccessGetUser(json_root) > 0) {
+		    mPage += 1;
+		    getUserInfo();
+		}
 	    }
 
 	    @Override
@@ -270,19 +341,18 @@ public class FragmentUser extends Fragment {
 		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	    }
 	});
-	return view;
     }
 
-    public void onSuccessGetUser(JSONObject json_root) {
+    public int onSuccessGetUser(JSONObject json_root) {
 	List<DataPicture> mPictures = new ArrayList<DataPicture>();
 
-	Log.d("MainActivity.http", "json:" + json_root);
+	Log.d("http.user", "json:" + json_root);
 	try {
 	    int ecode = M.ecode(json_root);
 	    if (ecode != 0) {
 		Toast.makeText(mContext, M.emsg(json_root), Toast.LENGTH_SHORT)
 			.show();
-		return;
+		return -1;
 	    }
 	    JSONObject json_data = json_root.getJSONObject("data");
 	    mUser.nick = json_data.optString("nick");
@@ -310,17 +380,19 @@ public class FragmentUser extends Fragment {
 	    String msg = "服务器返回的数据无效";
 	    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	}
+	Toast.makeText(mContext, "loaded:" + mPictures.size(),
+		Toast.LENGTH_SHORT).show();
 	updateScreenInfo();
 	mUserPictureAdapter.addItems(mPictures);
 	mUserPictureAdapter.notifyDataSetChanged();
+	return mPictures.size();
     }
-    
+
     public void updateScreenInfo() {
 	mTextNick.setText(mUser.nick);
 	mTextIntro.setText(mUser.intro);
 	mButtonMoney.setText("" + mUser.moneyNumber);
 	mButtonPicture.setText("" + mUser.pictureNumber);
-	
     }
 
     public void onSuccessUpload(JSONObject json_root) {

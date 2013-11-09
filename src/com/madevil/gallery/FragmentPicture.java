@@ -1,19 +1,29 @@
 package com.madevil.gallery;
 
+import java.util.List;
+
 import org.json.JSONObject;
 
+import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
+import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -25,16 +35,19 @@ public class FragmentPicture extends Fragment {
     private Boolean mUserLiked = false;
     private Boolean mUserCommented = false;
     private Boolean mUserDownloaded = false;
-    private DataPicture mPicture = null;
-    private Button mButtonLike, mButtonComment, mButtonDownload;
-    private ImageView mButtonAvatar = null;
-    private ImageView mImage = null;
-    private Context mContext = null;
-    private PhotoViewAttacher mPhoto = null;
 
-    public static FragmentPicture Ins(DataPicture picture) {
+    private List<DataPicture> mPictures;
+    private DataPicture mPicture;
+
+    private Button mButtonLike, mButtonComment, mButtonDownload;
+    private ImageView mButtonAvatar;
+    private Context mContext;
+    private ViewPager mViewPager;
+    private RelativeLayout mLayout;
+
+    public static FragmentPicture Ins(List<DataPicture> pictures) {
 	FragmentPicture f = new FragmentPicture();
-	f.mPicture = picture;
+	f.mPictures = pictures;
 	return f;
     }
 
@@ -44,21 +57,12 @@ public class FragmentPicture extends Fragment {
 	View view = inflater.inflate(R.layout.fragment_picture, container,
 		false);
 	mContext = this.getActivity().getApplication();
-	mImage = (ImageView) view.findViewById(R.id.detail_image);
-	mPhoto = new PhotoViewAttacher(mImage);
-
-	Picasso.with(mContext).load(mPicture.getMiddleUrl()).into(mImage);
-
-	Log.d("PictureAdapter", "onCreate() id=" + mPicture.getId());
+	mLayout = (RelativeLayout) view.findViewById(R.id.detail_bar_info);
+	hide();
 
 	mButtonLike = (Button) view.findViewById(R.id.detail_btn_like);
 	mButtonComment = (Button) view.findViewById(R.id.detail_btn_comment);
 	mButtonDownload = (Button) view.findViewById(R.id.detail_btn_download);
-	mButtonLike.setText(String.format("%s", mPicture.getLikeNumber()));
-	mButtonComment
-		.setText(String.format("%s", mPicture.getCommentNumber()));
-	mButtonDownload.setText(String.format("%s",
-		mPicture.getDownloadNumber()));
 
 	mButtonLike.setOnClickListener(new OnClickListener() {
 	    @Override
@@ -87,7 +91,35 @@ public class FragmentPicture extends Fragment {
 	    }
 	});
 
-	String url = G.Url.pictureInfo(mPicture.getId());
+	// bind photo view
+	mViewPager = (ViewPager) view.findViewById(R.id.detail_frame);
+	mViewPager.setAdapter(new PicturePagerAdapter());
+	mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
+	    @Override
+	    public void onPageScrollStateChanged(int arg0) {
+	    }
+
+	    @Override
+	    public void onPageScrolled(int arg0, float arg1, int arg2) {
+	    }
+
+	    @Override
+	    public void onPageSelected(int position) {
+		mPicture = mPictures.get(position);
+		mButtonLike.setText(String.format("%s",
+			mPicture.getLikeNumber()));
+		mButtonComment.setText(String.format("%s",
+			mPicture.getCommentNumber()));
+		mButtonDownload.setText(String.format("%s",
+			mPicture.getDownloadNumber()));
+		loadPictureInfo(mPicture.getMiddleUrl());
+	    }
+	});
+
+	return view;
+    }
+
+    public void loadPictureInfo(String url) {
 	Log.i("DetailActivity.http", "url: " + url);
 	G.http.get(url, new JsonHttpResponseHandler() {
 	    @Override
@@ -128,8 +160,6 @@ public class FragmentPicture extends Fragment {
 	    }
 
 	});
-	return view;
-
     }
 
     public void onClick_detail_btn_like(View v) {
@@ -195,4 +225,57 @@ public class FragmentPicture extends Fragment {
 	intent.putExtra(DataUser.intentTag, mUser.id);
 	this.startActivityForResult(intent, 0);
     }
+
+    public void show() {
+	((ActivityDetail) getActivity()).getSupportActionBar().show();
+	mLayout.setVisibility(View.VISIBLE);
+
+    }
+
+    public void hide() {
+	((ActivityDetail) getActivity()).getSupportActionBar().hide();
+	mLayout.setVisibility(View.GONE);
+
+    }
+
+    class PicturePagerAdapter extends PagerAdapter {
+	@Override
+	public int getCount() {
+	    return mPictures.size();
+	}
+
+	@Override
+	public View instantiateItem(ViewGroup container, int position) {
+	    PhotoView photoView = new PhotoView(container.getContext());
+	    photoView.setPadding(2, 2, 2, 2);
+	    DataPicture picture = mPictures.get(position);
+	    Picasso.with(mContext).load(picture.getMiddleUrl()).into(photoView);
+	    container.addView(photoView, LayoutParams.MATCH_PARENT,
+		    LayoutParams.MATCH_PARENT);
+
+	    photoView.setOnPhotoTapListener(new OnPhotoTapListener() {
+		@Override
+		public void onPhotoTap(View arg0, float arg1, float arg2) {
+		    if (mLayout.getVisibility() != View.GONE) {
+			hide();
+		    } else {
+			show();
+		    }
+		}
+	    });
+	    return photoView;
+	}
+
+	@Override
+	public void destroyItem(ViewGroup container, int position, Object object) {
+	    container.removeView((View) object);
+	}
+
+	@Override
+	public boolean isViewFromObject(View view, Object object) {
+	    return view == object;
+	}
+
+    }
+
 }

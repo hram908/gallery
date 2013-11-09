@@ -1,71 +1,16 @@
 package com.madevil.gallery;
 
-import java.io.File;
-import java.util.List;
-
-import org.json.JSONObject;
-
-import android.content.Context;
-import android.content.Intent;
-import android.net.http.HttpResponseCache;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-import com.madevil.gallery.ActivityMain.ViewAdapter;
-import com.madevil.gallery.PictureAdapter.ViewHolder;
-import com.squareup.picasso.Picasso;
-
-class PicturePagerAdapter extends FragmentPagerAdapter {
-    private DataShare share = null;
-
-    public PicturePagerAdapter(FragmentManager fm, Context c) {
-	super(fm);
-	share = DataShare.Ins(c);
-    }
-
-    @Override
-    public Fragment getItem(int index) {
-	DataPicture picture = share.pictures.get(index);
-	Fragment f = FragmentPicture.Ins(picture);
-	return f;
-    }
-
-    @Override
-    public int getCount() {
-	return share.pictures.size();
-    }
-}
+import android.view.Window;
 
 
 public class ActivityDetail extends BasicActivity {
-    private Context mContext = null;    
-    private ActionBar mBar = null;
-    private DataShare share = null;
-    private PicturePagerAdapter mAdapter = null;
-    private ViewPager mPager = null;
-    
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 	switch (item.getItemId()) {
@@ -77,36 +22,18 @@ public class ActivityDetail extends BasicActivity {
 	}
     }
 
+    @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
-	setContentView(R.layout.activity_detail);
-	this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
-	mBar = getSupportActionBar();
-	mContext = getApplicationContext();
-	share = DataShare.Ins(mContext);
+	getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+	DataShare share = DataShare.Ins(getApplicationContext());
 	
-	Intent intent = getIntent();
-	int index = intent.getIntExtra("index", 0);
-
-	mAdapter = new PicturePagerAdapter(getSupportFragmentManager(), mContext);
-	mPager = (ViewPager) findViewById(R.id.detail_layout_pager);
-	mPager.setAdapter(mAdapter);
-	mPager.setCurrentItem(index);
-	mPager.setOnPageChangeListener(new OnPageChangeListener() {
-	    @Override
-	    public void onPageScrollStateChanged(int arg0) {
-	    }
-
-	    @Override
-	    public void onPageScrolled(int arg0, float arg1, int arg2) {
-	    }
-
-	    @Override
-	    public void onPageSelected(int index) {
-	    }
-	});
+        FragmentPicture f = FragmentPicture.Ins(share.pictures);
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.add(android.R.id.content, f).commit();
     }
 
     @Override
@@ -115,6 +42,5 @@ public class ActivityDetail extends BasicActivity {
 	getMenuInflater().inflate(R.menu.activity_detail, menu);
 	return true;
     }
-    
-    
+
 }

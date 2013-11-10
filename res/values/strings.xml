@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">微写真</string>
     <string name="menu_settings">设置</string>
     <string name="menu_login">登入</string>
@@ -19,6 +18,11 @@
     <string name="title_fragment_user">用户</string>
     <string name="title_activity_activity_splash">微写真</string>
     <string name="msg_welcome">欢迎使用微写真</string>
+    <string name="t_loading">加载中</string>
+    <string name="t_load_done">没有更多了</string>
     <string name="t_user_nick">无名氏</string>
     <string name="t_user_intro">签名档</string>
+    <string name="t_like">赞</string>
+    <string name="t_comment">评论</string>
+    <string name="t_download">高清</string>
 </resources>

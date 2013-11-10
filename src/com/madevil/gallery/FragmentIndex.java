@@ -1,5 +1,6 @@
 package com.madevil.gallery;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,7 +93,9 @@ class PictureAdapter extends BaseAdapter {
 	DataPicture picture = share.pictures.get(index);
 	int height = picture.getHeight() * mItemWidth / picture.getWidth();
 	int width = LayoutParams.MATCH_PARENT;
-	Log.d("FragmentIndex", "height="+height+", orig height="+picture.getHeight() + ", item width="+mItemWidth);
+	Log.d("FragmentIndex",
+		"height=" + height + ", orig height=" + picture.getHeight()
+			+ ", item width=" + mItemWidth);
 	ViewHolder holder = (ViewHolder) view.getTag();
 	holder.imageView.setLayoutParams(new LayoutParams(width, height));
 	Context c = parent.getContext();
@@ -129,7 +132,6 @@ public class FragmentIndex extends Fragment {
     @SuppressLint("NewApi")
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-	// TODO Auto-generated method stub
 	super.onCreateOptionsMenu(menu, inflater);
 	menu.add(getString(R.string.menu_refresh)).setShowAsAction(
 		MenuItem.SHOW_AS_ACTION_IF_ROOM);
@@ -137,7 +139,6 @@ public class FragmentIndex extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-	// Handle item selection
 	switch (item.getItemId()) {
 	case R.id.menu_refresh:
 	    refresh();
@@ -152,12 +153,9 @@ public class FragmentIndex extends Fragment {
 	    Bundle savedInstanceState) {
 	View view = inflater.inflate(R.layout.fragment_index, container, false);
 
-	// Retrieve the PullToRefreshLayout from the content view
+	// 下拉刷新
 	PullToRefreshLayout ptrLayout = (PullToRefreshLayout) view
 		.findViewById(R.id.ptr_layout);
-
-	// Give the PullToRefreshAttacher to the PullToRefreshLayout, along with
-	// a refresh listener.
 	ptrLayout.setPullToRefreshAttacher(mPullToRefreshAttacher,
 		new OnRefreshListener() {
 		    @Override
@@ -168,14 +166,15 @@ public class FragmentIndex extends Fragment {
 		    }
 		});
 
+	// 全局参数
 	mContext = this.getActivity().getApplication();
 	share = DataShare.Ins(mContext);
+
+	// 瀑布流
 	mGridView = (StaggeredGridView) view
 		.findViewById(R.id.fragment_index_grid);
-	mGridView.setItemMargin(1); // set the GridView margin
-
-	mFooter = inflater.inflate(R.layout.component_loading, null);
-	mGridView.setFooterView(mFooter);
+	mGridView.setItemMargin(2); // set the GridView margin
+	mGridView.setColumnCount(3);
 	mGridView.setOnLoadmoreListener(new OnLoadmoreListener() {
 	    @Override
 	    public void onLoadmore() {
@@ -183,32 +182,37 @@ public class FragmentIndex extends Fragment {
 	    }
 	});
 
-	mItemWidth = getActivity().getWindowManager().getDefaultDisplay().getWidth();
+	// 加载更多
+	mFooter = inflater.inflate(R.layout.component_loading, null);
+	mGridView.setFooterView(mFooter);
+
+	// 数据类
+	mItemWidth = getActivity().getWindowManager().getDefaultDisplay()
+		.getWidth();
 	mItemWidth = mItemWidth / mGridView.getColumnCount() + 2;
 	mAdapter = new PictureAdapter(mContext, mItemWidth);
 	mGridView.setAdapter(mAdapter);
+	mAdapter.notifyDataSetChanged();
 
 	if (share.pictures_json.length() == 0) {
 	    loadmore();
 	} else {
 	    try {
-		JSONObject json_root = new JSONObject(share.pictures_json);
-		LoadJson(json_root);
+		JSONObject json_data = new JSONObject(share.pictures_json);
+		LoadJson(json_data);
 	    } catch (Exception e) {
 		e.printStackTrace();
 		Log.e("FragmentIndex", "Load index picture from cache fail");
+		loadmore();
 	    }
 	}
 
 	return view;
     }
 
-    private void LoadJson(JSONObject json_root) {
+    private void LoadJson(JSONObject json_data) {
 	List<DataPicture> items = new ArrayList<DataPicture>();
-
-	Log.d("MainActivity.http", "json:" + json_root);
 	try {
-	    JSONObject json_data = json_root.getJSONObject("data");
 	    JSONArray json_pics = json_data.getJSONArray("pics");
 	    for (int i = 0; i < json_pics.length(); i++) {
 		JSONObject obj = json_pics.getJSONObject(i);
@@ -229,12 +233,14 @@ public class FragmentIndex extends Fragment {
 	    String msg = "服务器返回的数据无效";
 	    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	}
+	
 	if (items.size() == 0) {
+	    // all finish
 	    mFooter.findViewById(R.id.component_loading_progress)
 		    .setVisibility(View.INVISIBLE);
 	    TextView t = (TextView) mFooter
 		    .findViewById(R.id.component_loading_text);
-	    t.setText("没有更多了");
+	    t.setText(R.string.t_load_done);
 	}
 	if (mReload) {
 	    mAdapter.clear();
@@ -253,27 +259,21 @@ public class FragmentIndex extends Fragment {
 
     private void loadmore() {
 	String url = G.Url.index(mPage);
-	Log.d("MainActivity.http", "current url:" + url);
-
-	// do request
-	G.http.setCookieStore(share.http_cookies);
-	G.http.get(url, new JsonHttpResponseHandler() {
+	Http.With(mContext).get(url, new JsonHttpResponseHandler() {
 	    @Override
-	    public void onSuccess(JSONObject json_root) {
-		mPullToRefreshAttacher.setRefreshComplete();
+	    public void onSuccess(JSONObject json_data) {
+		if (mPullToRefreshAttacher != null)
+		    mPullToRefreshAttacher.setRefreshComplete();
 		if (mPage == 0) {
-		    share.pictures_json = json_root.toString();
+		    share.pictures_json = json_data.toString();
 		}
-		LoadJson(json_root);
+		LoadJson(json_data);
 	    }
 
 	    @Override
 	    public void onFailure(Throwable e, String response) {
-		Log.e("MianActivity.http", "Exception: " + e.toString());
-		e.printStackTrace();
-		String msg = "服务器出错";
-		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-		mPullToRefreshAttacher.setRefreshComplete();
+		if (mPullToRefreshAttacher != null)
+		    mPullToRefreshAttacher.setRefreshComplete();
 	    }
 	});
     }

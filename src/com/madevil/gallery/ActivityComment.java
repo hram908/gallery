@@ -64,11 +64,11 @@ class CommentAdapter extends BaseAdapter {
     public void addItems(List<DataComment> items) {
 	mComments.addAll(items);
     }
-    
+
     public void addLast(DataComment item) {
 	mComments.addLast(item);
     }
-    
+
     public void addFirst(DataComment item) {
 	mComments.addFirst(item);
     }
@@ -109,7 +109,7 @@ class CommentAdapter extends BaseAdapter {
 	ViewHolder holder = (ViewHolder) view.getTag();
 	holder.contentView.setText(comment.content);
 	String avatar_url = G.Url.userAvatar(comment.user.id);
-	Log.d("http", "avatar url="+avatar_url);
+	Log.d("http", "avatar url=" + avatar_url);
 	Picasso.with(mContext).load(avatar_url).into(holder.avatarView);
 	return view;
     }
@@ -121,7 +121,7 @@ public class ActivityComment extends BasicActivity {
     private DataPicture mPicture = null;
     private Context mContext = null;
     private EditText mText = null;
-    private DataComment mMyComment = null; 
+    private DataComment mMyComment = null;
     private DataShare share = null;
     private Button mButtonSend = null;
 
@@ -144,22 +144,12 @@ public class ActivityComment extends BasicActivity {
 	Intent intent = getIntent();
 	mPicture = intent.getParcelableExtra(DataPicture.intent);
 
-	G.http.get(G.Url.pictureComment(mPicture.getId()),
+	Http.With(mContext).get(G.Url.pictureComment(mPicture.getId()),
 		new JsonHttpResponseHandler() {
 		    @Override
 		    public void onSuccess(JSONObject json_root) {
 			doSuccessGetComments(json_root);
 		    }
-
-		    @Override
-		    public void onFailure(Throwable e, String response) {
-			Log.e("MianActivity.http", "Exception: " + e.toString());
-			e.printStackTrace();
-			String msg = "服务器出错";
-			Toast.makeText(mContext, msg, Toast.LENGTH_SHORT)
-				.show();
-		    }
-
 		});
     }
 
@@ -175,7 +165,7 @@ public class ActivityComment extends BasicActivity {
 	switch (item.getItemId()) {
 	case android.R.id.home:
 	    this.finish();
-	    //NavUtils.navigateUpFromSameTask(this);
+	    // NavUtils.navigateUpFromSameTask(this);
 	    return true;
 	default:
 	    return super.onOptionsItemSelected(item);
@@ -186,12 +176,12 @@ public class ActivityComment extends BasicActivity {
 	mButtonSend.setEnabled(false);
 	String text = mText.getText().toString();
 	text = text.replace("\n", " ").replace("\r", "").trim();
-	if ( text.length() == 0 ) {
+	if (text.length() == 0) {
 	    Toast.makeText(mContext, "请先填写评论", Toast.LENGTH_SHORT).show();
 	    mButtonSend.setEnabled(true);
 	    return;
 	}
-	
+
 	// save to mem
 	mMyComment = new DataComment();
 	mMyComment.id = "";
@@ -201,17 +191,10 @@ public class ActivityComment extends BasicActivity {
 	RequestParams params = new RequestParams();
 	params.put("content", text);
 	String url = G.Url.doPictureComment(mPicture.getId());
-	G.http.setCookieStore(share.http_cookies);
-	G.http.post(url, params, new JsonHttpResponseHandler() {
+	Http.With(mContext).post(url, params, new JsonHttpResponseHandler() {
 	    @Override
 	    public void onSuccess(JSONObject json_root) {
 		mButtonSend.setEnabled(true);
-		int ecode = M.ecode(json_root);
-		if (ecode != 0) {
-		    Toast.makeText(mContext, M.emsg(json_root),
-			    Toast.LENGTH_SHORT).show();
-		    return;
-		}
 		mAdapter.addLast(mMyComment);
 		mAdapter.notifyDataSetChanged();
 		mText.setText("");
@@ -220,10 +203,6 @@ public class ActivityComment extends BasicActivity {
 	    @Override
 	    public void onFailure(Throwable e, String response) {
 		mButtonSend.setEnabled(true);
-		Log.e("MianActivity.http", "Exception: " + e.toString());
-		e.printStackTrace();
-		String msg = "服务器出错";
-		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	    }
 	});
     }
@@ -243,13 +222,13 @@ public class ActivityComment extends BasicActivity {
 		c.time = obj.getString("time");
 		comments.add(c);
 	    }
-	} catch ( Exception e ) {
+	} catch (Exception e) {
 	    e.printStackTrace();
 	    Log.e("ActivityComment", "get comments fail");
 	}
 	mAdapter.addItems(comments);
 	mAdapter.notifyDataSetChanged();
-	
+
     }
 
 }

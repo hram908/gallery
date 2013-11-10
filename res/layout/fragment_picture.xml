@@ -3,7 +3,18 @@
     android:id="@+id/fragment_picture"
     android:layout_width="match_parent"
     android:layout_height="fill_parent"
+    android:background="@color/black"
     android:orientation="vertical" >
+
+    <ProgressBar
+        android:id="@+id/fragment_picture_loading"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="192dp" />
 
     <android.support.v4.view.ViewPager
         android:id="@+id/detail_frame"
@@ -11,7 +22,7 @@
         android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:background="@color/black"
+        android:background="@color/transparent"
         android:gravity="center"
         android:orientation="vertical" >
     </android.support.v4.view.ViewPager>
@@ -36,7 +47,8 @@
                 android:layout_height="wrap_content"
                 android:background="#00000000"
                 android:drawableLeft="@drawable/button_like"
-                android:text="123" />
+                android:text="@string/t_like"
+                android:textColor="@color/text_secondary" />
 
             <Button
                 android:id="@+id/detail_btn_comment"
@@ -45,7 +57,8 @@
                 android:layout_height="wrap_content"
                 android:background="#00000000"
                 android:drawableLeft="@drawable/button_comment"
-                android:text="456" />
+                android:text="@string/t_comment"
+                android:textColor="@color/text_secondary" />
 
             <Button
                 android:id="@+id/detail_btn_download"
@@ -54,7 +67,10 @@
                 android:layout_height="wrap_content"
                 android:background="#00000000"
                 android:drawableLeft="@drawable/button_download"
-                android:text="789" />
+                android:paddingLeft="8dp"
+                android:text="@string/t_download"
+                android:textColor="@color/text_secondary" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -65,9 +81,11 @@
 
             <ImageView
                 android:id="@+id/detail_btn_avatar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
                 android:src="@drawable/default_avatar" />
+
         </LinearLayout>
     </RelativeLayout>
 

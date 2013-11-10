@@ -122,7 +122,7 @@ class UserPictureAdapter implements StickyGridHeadersSimpleAdapter {
 	// / normal pictures
 	int index = position - mUpload;
 	if (view == null) {
-	    //Log.i("adapter.user", "build view index=" + index);
+	    // Log.i("adapter.user", "build view index=" + index);
 	    LayoutInflater inflater = LayoutInflater.from(parent.getContext());
 	    view = inflater.inflate(R.layout.component_picture_fixed, null);
 	    view.setOnClickListener(new View.OnClickListener() {
@@ -143,7 +143,8 @@ class UserPictureAdapter implements StickyGridHeadersSimpleAdapter {
 	ImageView image = (ImageView) view
 		.findViewById(R.id.component_picture_fixed_image);
 	image.setTag((Integer) index);
-	Picasso.with(mContext).load(picture.getSmallUrl()).into(image);
+	Picasso.with(parent.getContext()).load(picture.getSmallUrl())
+		.into(image);
 	return view;
     }
 
@@ -322,39 +323,21 @@ public class FragmentUser extends Fragment {
     public void getUserInfo() {
 	// do request
 	String url = G.Url.user(mUser.id, mPage);
-	Log.d("UserActivity.http", "url=" + url);
-	G.http.setCookieStore(share.http_cookies);
-	G.http.get(url, new JsonHttpResponseHandler() {
+	Http.With(mContext).get(url, new JsonHttpResponseHandler() {
 	    @Override
-	    public void onSuccess(JSONObject json_root) {
-		if (onSuccessGetUser(json_root) > 0) {
+	    public void onSuccess(JSONObject obj) {
+		if (onSuccessGetUser(obj) > 0) {
 		    mPage += 1;
 		    getUserInfo();
 		}
 	    }
-
-	    @Override
-	    public void onFailure(Throwable e, String response) {
-		Log.e("MianActivity.http", "Exception: " + e.toString());
-		e.printStackTrace();
-		String msg = "服务器出错";
-		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-	    }
 	});
     }
 
-    public int onSuccessGetUser(JSONObject json_root) {
+    public int onSuccessGetUser(JSONObject json_data) {
 	List<DataPicture> mPictures = new ArrayList<DataPicture>();
 
-	Log.d("http.user", "json:" + json_root);
 	try {
-	    int ecode = M.ecode(json_root);
-	    if (ecode != 0) {
-		Toast.makeText(mContext, M.emsg(json_root), Toast.LENGTH_SHORT)
-			.show();
-		return -1;
-	    }
-	    JSONObject json_data = json_root.getJSONObject("data");
 	    mUser.nick = json_data.optString("nick");
 	    mUser.intro = json_data.optString("intro", "");
 	    mUser.moneyNumber = json_data.optInt("money", 0);
@@ -395,17 +378,9 @@ public class FragmentUser extends Fragment {
 	mButtonPicture.setText("" + mUser.pictureNumber);
     }
 
-    public void onSuccessUpload(JSONObject json_root) {
-	Log.d("http.upload", "json:" + json_root);
+    public void onSuccessUpload(JSONObject json_data) {
 	DataPicture picture = new DataPicture();
 	try {
-	    int ecode = M.ecode(json_root);
-	    if (ecode != 0) {
-		Toast.makeText(mContext, M.emsg(json_root), Toast.LENGTH_SHORT)
-			.show();
-		return;
-	    }
-	    JSONObject json_data = json_root.getJSONObject("data");
 	    picture.setId(json_data.getString("pid"));
 	    picture.setUrl(json_data.getString("url"));
 	} catch (Exception e) {
@@ -452,26 +427,23 @@ public class FragmentUser extends Fragment {
 	    params.put("width", "7000");
 	    params.put("height", "7000");
 	    params.put("file", new File(filePath));
-	    String url = G.Url.doUpload();
-	    G.http.setCookieStore(share.http_cookies);
-	    G.http.post(url, params, new JsonHttpResponseHandler() {
-		@Override
-		public void onSuccess(JSONObject json_root) {
-		    mDialog.dismiss();
-		    onSuccessUpload(json_root);
-		}
+	    Http.With(mContext).post(G.Url.doUpload(), params,
+		    new JsonHttpResponseHandler() {
+			@Override
+			public void onSuccess(JSONObject json_data) {
+			    mDialog.dismiss();
+			    onSuccessUpload(json_data);
+			}
 
-		@Override
-		public void onFailure(Throwable e, String response) {
-		    mDialog.dismiss();
-		    Log.e("MianActivity.http", "Exception: " + e.toString());
-		    e.printStackTrace();
-		    new AlertDialog.Builder(mContext).setTitle("很抱歉")
-			    .setMessage("很抱歉，图片上传失败了～\n请稍后再次尝试").create()
-			    .show();
-		}
+			@Override
+			public void onFailure(Throwable e, String response) {
+			    mDialog.dismiss();
+			    new AlertDialog.Builder(mContext).setTitle("很抱歉")
+				    .setMessage("很抱歉，图片上传失败了～\n请稍后再次尝试")
+				    .create().show();
+			}
 
-	    });
+		    });
 	} catch (Exception e) {
 	    Toast.makeText(mContext, "Internal error", Toast.LENGTH_LONG)
 		    .show();

@@ -17,6 +17,7 @@ import com.tencent.tauth.Tencent;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Parcel;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 

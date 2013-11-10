@@ -1,13 +1,12 @@
 package com.madevil.gallery;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.json.JSONObject;
 
 import uk.co.senab.photoview.PhotoView;
-import uk.co.senab.photoview.PhotoViewAttacher;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,7 +14,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +22,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -46,7 +45,6 @@ public class FragmentPicture extends Fragment {
     private Context mContext;
     private ViewPager mViewPager;
     private RelativeLayout mLayout;
-    
 
     public static FragmentPicture Ins(ArrayList<DataPicture> pictures, int index) {
 	FragmentPicture f = new FragmentPicture();
@@ -94,6 +92,19 @@ public class FragmentPicture extends Fragment {
 	    }
 	});
 
+	ProgressBar p = (ProgressBar) view
+		.findViewById(R.id.fragment_picture_loading);
+	p.setOnClickListener(new OnClickListener() {
+	    @Override
+	    public void onClick(View v) {
+		if (mLayout.getVisibility() != View.GONE) {
+		    hide();
+		} else {
+		    show();
+		}
+	    }
+	});
+
 	// bind photo view
 	mViewPager = (ViewPager) view.findViewById(R.id.detail_frame);
 	mViewPager.setAdapter(new PicturePagerAdapter());
@@ -110,16 +121,30 @@ public class FragmentPicture extends Fragment {
 	    public void onPageSelected(int position) {
 		Log.d("ActivityDetail", "onPageSelected");
 		mPicture = mPictures.get(position);
-		mButtonLike.setText(String.format("%s",
-			mPicture.getLikeNumber()));
-		mButtonComment.setText(String.format("%s",
-			mPicture.getCommentNumber()));
-		mButtonDownload.setText(String.format("%s",
-			mPicture.getDownloadNumber()));
+		int num = 0;
+
+		num = mPicture.getLikeNumber();
+		if (num > 0) {
+		    mButtonLike.setText(String.format("%s", num));
+		} else {
+		    mButtonLike.setText(R.string.t_like);
+		}
+
+		num = mPicture.getCommentNumber();
+		if (num > 0) {
+		    mButtonComment.setText(String.format("%s", num));
+		} else {
+		    mButtonComment.setText(R.string.t_comment);
+		}
+
+		mButtonDownload.setText(R.string.t_download);
 		loadPictureInfo(G.Url.pictureInfo(mPicture.getId()));
+		String url = G.Url.userAvatar(mUser.id);
+		Log.d("ActivityDetail", "avatar url=" + url);
+		Picasso.with(getActivity()).load(url).into(mButtonAvatar);
 	    }
 	});
-	
+
 	mPicture = mPictures.get(mIndex);
 	mViewPager.setCurrentItem(mIndex);
 	hide();
@@ -127,21 +152,10 @@ public class FragmentPicture extends Fragment {
     }
 
     public void loadPictureInfo(String url) {
-	Log.i("DetailActivity.http", "url: " + url);
-	G.http.get(url, new JsonHttpResponseHandler() {
+	Http.With(mContext).get(url, new JsonHttpResponseHandler() {
 	    @Override
-	    public void onSuccess(JSONObject json_root) {
-		Log.d("DetailActivity.http", "json:" + json_root);
+	    public void onSuccess(JSONObject obj) {
 		try {
-		    int ecode = json_root.getInt("ecode");
-		    if (ecode != 0) {
-			String msg = "" + ecode + "."
-				+ json_root.optString("msg", "系统繁忙，请休息一下再来～");
-			Toast.makeText(mContext, msg, Toast.LENGTH_SHORT)
-				.show();
-			return;
-		    }
-		    JSONObject obj = json_root.getJSONObject("data");
 		    mUserLiked = obj.optBoolean("liked", false);
 		    mUserCommented = obj.optBoolean("commented", false);
 		    mUserDownloaded = obj.optBoolean("downloaded", false);
@@ -155,28 +169,18 @@ public class FragmentPicture extends Fragment {
 		mButtonLike.setPressed(mUserLiked);
 		mButtonComment.setPressed(mUserCommented);
 		mButtonDownload.setPressed(mUserDownloaded);
-		String url = G.Url.userAvatar(mUser.id);
-		Log.d("ActivityDetail", "avatar url=" + url);
-		Picasso.with(mContext).load(url).into(mButtonAvatar);
 	    }
-
-	    @Override
-	    public void onFailure(Throwable e, String response) {
-		Log.e("MianActivity.http", "Exception: " + e.toString());
-		e.printStackTrace();
-		String msg = "服务器出错";
-		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-	    }
-
 	});
     }
 
     private boolean lock_btn_like = false;
+
     public void onClick_detail_btn_like(View v) {
-	if ( lock_btn_like ) return;
+	if (lock_btn_like)
+	    return;
 	lock_btn_like = true;
 	String url = G.Url.doPictureLike(mPicture.getId());
-	Log.d("http", "like url="+url);
+	Log.d("http", "like url=" + url);
 	// do request
 	RequestParams params = new RequestParams();
 	if (mUserLiked) {
@@ -184,38 +188,17 @@ public class FragmentPicture extends Fragment {
 	} else {
 	    params.put("like", "1");
 	}
-	G.http.post(url, params, new JsonHttpResponseHandler() {
+	Http.With(mContext).post(url, params, new JsonHttpResponseHandler() {
 	    @Override
-	    public void onSuccess(JSONObject json_root) {
+	    public void onSuccess(JSONObject obj) {
 		lock_btn_like = false;
-		Log.d("MainActivity.http", "json:" + json_root);
-		try {
-		    int ecode = json_root.getInt("ecode");
-		    String msg = "" + ecode + "."
-			    + json_root.optString("msg", "系统繁忙");
-		    if (ecode == 0) {
-			mUserLiked = !mUserLiked;
-		    } else {
-			Toast.makeText(mContext, msg, Toast.LENGTH_SHORT)
-				.show();
-		    }
-		} catch (Exception e) {
-		    Log.e("MainActivity.http", "exception:" + e.toString());
-		    String msg = "服务器返回的数据无效";
-		    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-		}
 		mButtonLike.setPressed(mUserLiked);
 	    }
 
 	    @Override
 	    public void onFailure(Throwable e, String response) {
 		lock_btn_like = false;
-		Log.e("MianActivity.http", "Exception: " + e.toString());
-		e.printStackTrace();
-		String msg = "服务器出错";
-		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	    }
-
 	});
 	return;
     }
@@ -233,6 +216,11 @@ public class FragmentPicture extends Fragment {
     }
 
     public void onClick_detail_btn_avatar(View v) {
+	if (mUser.id.length() == 0) {
+	    Toast.makeText(mContext, "抱歉，暂时无法查看该用户的写真册", Toast.LENGTH_LONG)
+		    .show();
+	    return ;
+	}
 	Intent intent = new Intent(mContext, ActivityUser.class);
 	intent.putExtra(DataUser.intent, mUser);
 	this.startActivityForResult(intent, 0);
@@ -254,10 +242,12 @@ public class FragmentPicture extends Fragment {
 	    return mPictures.size();
 	}
 
+	@SuppressLint("ResourceAsColor")
 	@Override
 	public View instantiateItem(ViewGroup container, int position) {
 	    PhotoView photoView = new PhotoView(container.getContext());
 	    photoView.setPadding(2, 2, 2, 2);
+	    photoView.setBackgroundColor(R.color.transparent);
 	    DataPicture picture = mPictures.get(position);
 	    Picasso.with(mContext).load(picture.getMiddleUrl()).into(photoView);
 	    container.addView(photoView, LayoutParams.MATCH_PARENT,

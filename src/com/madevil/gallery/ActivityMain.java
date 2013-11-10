@@ -93,12 +93,6 @@ public class ActivityMain extends BasicActivity {
 	super.onStop();
 	Log.d("ActivityMain", "onStop(), dump DataShare.");
 	share.dump(getSharedPreferences(PREFS_NAME, 0));
-
-	/*
-	 * // flush http cache HttpResponseCache cache =
-	 * HttpResponseCache.getInstalled(); if (cache != null) { cache.flush();
-	 * }
-	 */
     }
 
     @SuppressLint("NewApi")
@@ -129,15 +123,7 @@ public class ActivityMain extends BasicActivity {
 	// Restore preferences
 	Log.d("ActivityMain", "onCreate(), load DataShare");
 	share.load(getSharedPreferences(PREFS_NAME, 0));
-
-	/*
-	 * // settings http cache try { File httpCacheDir = new
-	 * File(mContext.getCacheDir(), "http-cache"); long httpCacheSize = 50 *
-	 * 1024 * 1024; // 50 MiB HttpResponseCache.install(httpCacheDir,
-	 * httpCacheSize); } catch (Exception e) { e.printStackTrace();
-	 * Log.i("ActivityMain", "HTTP cache installation failed:" + e); }
-	 */
-	Picasso.with(mContext).setDebugging(true);
+	//Picasso.with(mContext).setDebugging(true);
 
 	mViewAdapter = new ViewAdapter(getSupportFragmentManager());
 	mPager = (ViewPager) findViewById(R.id.main_layout_pager);

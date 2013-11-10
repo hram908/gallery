@@ -4,7 +4,6 @@ import com.loopj.android.http.AsyncHttpClient;
 
 public class G {
     public static final String HOST = "http://talebook.org:8000";
-    public static AsyncHttpClient http = new AsyncHttpClient();
 
     public static class Url {
 	public static String index(int page_id) {

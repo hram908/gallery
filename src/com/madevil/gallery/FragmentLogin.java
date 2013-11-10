@@ -60,26 +60,13 @@ public class FragmentLogin extends Fragment {
 
 	BasicClientCookie cookie = new BasicClientCookie("user", share.user.id);
 	share.http_cookies.addCookie(cookie);
-	G.http.setCookieStore(share.http_cookies);
-
-	Log.d("http.qq", "url=" + G.Url.doLogin());
-	G.http.post(G.Url.doLogin(), params, new JsonHttpResponseHandler() {
+	Http.With(mContext).post(G.Url.doLogin(), params, new JsonHttpResponseHandler() {
 	    @Override
-	    public void onSuccess(JSONObject json_root) {
+	    public void onSuccess(JSONObject json_data) {
 		mDialog.dismiss();
-		Log.d("http.qq", "json:" + json_root);
-		int ecode = M.ecode(json_root);
-		if (ecode != 0) {
-		    share.is_login = false;
-		    Toast.makeText(mContext, M.emsg(json_root),
-			    Toast.LENGTH_SHORT).show();
-		    return;
-		}
 		try {
-		    JSONObject json_data = json_root.getJSONObject("data");
 		    share.user.nick = json_data.getString("nick");
-		    share.user.avatar = ""; // FIXME
-					    // json_data.getString("avatar");
+		    share.user.avatar = json_data.optString("avatar", "");
 		    Log.d("ActivityMain", "login success!");
 		    ChangeFragmentUser();
 		} catch (Exception e) {
@@ -92,11 +79,7 @@ public class FragmentLogin extends Fragment {
 
 	    public void onFailure(Throwable e, String response) {
 		mDialog.dismiss();
-		Log.e("http.qq", "Exception: " + e.toString());
-		e.printStackTrace();
 		share.is_login = false;
-		String msg = G.EMSG;
-		Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	    }
 	});
     }

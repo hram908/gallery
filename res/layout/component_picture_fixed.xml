@@ -3,9 +3,11 @@
     android:id="@+id/compoment_picture_fixed"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    android:layout_margin="1dp"
     android:background="@drawable/bg_table_cell_single"
     android:gravity="center"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:padding="1dp" >
 
     <ImageView
         android:id="@+id/component_picture_fixed_image"

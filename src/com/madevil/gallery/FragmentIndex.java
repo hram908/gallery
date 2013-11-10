@@ -85,21 +85,21 @@ class PictureAdapter extends BaseAdapter {
 		    intent.putExtra(DataPicture.intentIndex, holder.index);
 		    v.getContext().startActivity(intent);
 		    Log.d("PictureAdapter", "onClick() index=" + holder.index
-			    + ", id=" + picture.getId());
+			    + ", id=" + picture.id);
 		}
 	    });
 	}
 
 	DataPicture picture = share.pictures.get(index);
-	int height = picture.getHeight() * mItemWidth / picture.getWidth();
+	int height = picture.height * mItemWidth / picture.width;
 	int width = LayoutParams.MATCH_PARENT;
 	Log.d("FragmentIndex",
-		"height=" + height + ", orig height=" + picture.getHeight()
+		"height=" + height + ", orig height=" + picture.height
 			+ ", item width=" + mItemWidth);
 	ViewHolder holder = (ViewHolder) view.getTag();
 	holder.imageView.setLayoutParams(new LayoutParams(width, height));
 	Context c = parent.getContext();
-	Picasso.with(c).load(picture.getSmallUrl()).into(holder.imageView);
+	Picasso.with(c).load(picture.url_s).into(holder.imageView);
 	return view;
     }
 
@@ -173,7 +173,6 @@ public class FragmentIndex extends Fragment {
 	// 瀑布流
 	mGridView = (StaggeredGridView) view
 		.findViewById(R.id.fragment_index_grid);
-	mGridView.setItemMargin(2); // set the GridView margin
 	mGridView.setColumnCount(3);
 	mGridView.setOnLoadmoreListener(new OnLoadmoreListener() {
 	    @Override
@@ -217,16 +216,16 @@ public class FragmentIndex extends Fragment {
 	    for (int i = 0; i < json_pics.length(); i++) {
 		JSONObject obj = json_pics.getJSONObject(i);
 		DataPicture picture = new DataPicture();
-		picture.setId(obj.optString("pid", ""));
-		picture.setUrl(obj.optString("url", ""));
-		picture.setTitle(obj.optString("title", ""));
-		picture.setContent(obj.optString("content", ""));
-		picture.setCommentNumber(obj.optInt("comment_num", 0));
-		picture.setLikeNumber(obj.optInt("like", 0));
-		picture.setDownloadNumber(obj.optInt("download", 0));
-		picture.setHeight(obj.optInt("height"));
-		picture.setWidth(obj.optInt("width"));
+		picture.id = obj.optString("pid", "");
+		picture.title = obj.optString("title", "");
+		picture.content = obj.optString("content", "");
+		picture.commentNumber = obj.optInt("comment_num", 0);
+		picture.likeNumber = obj.optInt("like", 0);
+		picture.downloadNumber = obj.optInt("download", 0);
+		picture.height = obj.optInt("height", 0);
+		picture.width = obj.optInt("width");
 		picture.user.id = obj.optString("user");
+		picture.setUrl(obj.optString("url", ""));
 		items.add(picture);
 	    }
 	} catch (Exception e) {

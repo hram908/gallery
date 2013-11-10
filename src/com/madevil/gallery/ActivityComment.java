@@ -144,7 +144,7 @@ public class ActivityComment extends BasicActivity {
 	Intent intent = getIntent();
 	mPicture = intent.getParcelableExtra(DataPicture.intent);
 
-	Http.With(mContext).get(G.Url.pictureComment(mPicture.getId()),
+	Http.With(mContext).get(G.Url.pictureComment(mPicture.id),
 		new JsonHttpResponseHandler() {
 		    @Override
 		    public void onSuccess(JSONObject json_data) {
@@ -190,7 +190,7 @@ public class ActivityComment extends BasicActivity {
 
 	RequestParams params = new RequestParams();
 	params.put("content", text);
-	String url = G.Url.doPictureComment(mPicture.getId());
+	String url = G.Url.doPictureComment(mPicture.id);
 	Http.With(mContext).post(url, params, new JsonHttpResponseHandler() {
 	    @Override
 	    public void onSuccess(JSONObject json_root) {

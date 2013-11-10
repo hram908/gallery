@@ -7,6 +7,7 @@ import org.json.JSONObject;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -49,6 +50,7 @@ public class FragmentPicture extends Fragment {
     private Context mContext;
     private ViewPager mViewPager;
     private LinearLayout mLayout;
+    private PicturePagerAdapter mAdapter;
 
     public static FragmentPicture Ins(ArrayList<DataPicture> pictures, int index) {
 	FragmentPicture f = new FragmentPicture();
@@ -111,7 +113,8 @@ public class FragmentPicture extends Fragment {
 
 	// bind photo view
 	mViewPager = (ViewPager) view.findViewById(R.id.detail_frame);
-	mViewPager.setAdapter(new PicturePagerAdapter());
+	mAdapter = new PicturePagerAdapter();
+	mViewPager.setAdapter(mAdapter);
 	mViewPager.setOnPageChangeListener(new OnPageChangeListener() {
 	    @Override
 	    public void onPageScrollStateChanged(int arg0) {
@@ -135,16 +138,16 @@ public class FragmentPicture extends Fragment {
 	hide();
 	return view;
     }
-    
+
     public void updateScreen() {
-	int num = mPicture.getLikeNumber();
+	int num = mPicture.likeNumber;
 	if (num > 0) {
 	    mButtonLike.setText(String.format("%s", num));
 	} else {
 	    mButtonLike.setText(R.string.t_like);
 	}
 
-	num = mPicture.getCommentNumber();
+	num = mPicture.commentNumber;
 	if (num > 0) {
 	    mButtonComment.setText(String.format("%s", num));
 	} else {
@@ -152,9 +155,9 @@ public class FragmentPicture extends Fragment {
 	}
 
 	mButtonDownload.setText(R.string.t_download);
-	mTitle.setText(mPicture.getTitle());		
-	
-	loadPictureInfo(G.Url.pictureInfo(mPicture.getId()));
+	mTitle.setText(mPicture.getTitle());
+
+	loadPictureInfo(G.Url.pictureInfo(mPicture.id));
 	String url = G.Url.userAvatar(mPicture.user.id);
 	Log.i("picture", "avatar: " + url);
 	Picasso.with(getActivity()).load(url).into(mButtonAvatar);
@@ -188,7 +191,7 @@ public class FragmentPicture extends Fragment {
 	if (lock_btn_like)
 	    return;
 	lock_btn_like = true;
-	String url = G.Url.doPictureLike(mPicture.getId());
+	String url = G.Url.doPictureLike(mPicture.id);
 	Log.d("http", "like url=" + url);
 	// do request
 	RequestParams params = new RequestParams();
@@ -201,6 +204,7 @@ public class FragmentPicture extends Fragment {
 	    @Override
 	    public void onSuccess(JSONObject obj) {
 		lock_btn_like = false;
+		mUserLiked = !mUserLiked;
 		mButtonLike.setPressed(mUserLiked);
 	    }
 
@@ -212,10 +216,15 @@ public class FragmentPicture extends Fragment {
 	return;
     }
 
+    @SuppressLint("ResourceAsColor")
     public void onClick_detail_btn_download(View v) {
-	if (!mUserDownloaded) {
-	    // alert the coin
+	if (!this.mUserDownloaded) {
 	}
+
+	PhotoView photo = (PhotoView) mViewPager
+		.findViewById(R.id.fragment_picture);
+	photo.setBackgroundColor(R.color.transparent);
+	Picasso.with(mContext).load(mPicture.url).into(photo);
     }
 
     public void onClick_detail_btn_comment(View v) {
@@ -228,7 +237,7 @@ public class FragmentPicture extends Fragment {
 	if (mUser.id.length() == 0) {
 	    Toast.makeText(mContext, "抱歉，暂时无法查看该用户的写真册", Toast.LENGTH_LONG)
 		    .show();
-	    return ;
+	    return;
 	}
 	Intent intent = new Intent(mContext, ActivityUser.class);
 	intent.putExtra(DataUser.intent, mUser);
@@ -257,8 +266,10 @@ public class FragmentPicture extends Fragment {
 	    PhotoView photoView = new PhotoView(container.getContext());
 	    photoView.setPadding(2, 2, 2, 2);
 	    photoView.setBackgroundColor(R.color.transparent);
+	    photoView.setId(R.id.fragment_picture);
+
 	    DataPicture picture = mPictures.get(position);
-	    Picasso.with(mContext).load(picture.getMiddleUrl()).into(photoView);
+	    Picasso.with(mContext).load(picture.url_m).into(photoView);
 	    container.addView(photoView, LayoutParams.MATCH_PARENT,
 		    LayoutParams.MATCH_PARENT);
 

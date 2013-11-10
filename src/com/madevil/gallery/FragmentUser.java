@@ -143,7 +143,7 @@ class UserPictureAdapter implements StickyGridHeadersSimpleAdapter {
 	ImageView image = (ImageView) view
 		.findViewById(R.id.component_picture_fixed_image);
 	image.setTag((Integer) index);
-	Picasso.with(parent.getContext()).load(picture.getSmallUrl())
+	Picasso.with(parent.getContext()).load(picture.url_s)
 		.into(image);
 	return view;
     }
@@ -347,15 +347,16 @@ public class FragmentUser extends Fragment {
 	    for (int i = 0; i < json_pics.length(); i++) {
 		JSONObject obj = json_pics.getJSONObject(i);
 		DataPicture picture = new DataPicture();
-		picture.setId(obj.optString("pid", ""));
+		picture.id = obj.optString("pid", "");
+		picture.title = obj.optString("title", "");
+		picture.content = obj.optString("content", "");
+		picture.commentNumber = obj.optInt("comment_num", 0);
+		picture.likeNumber = obj.optInt("like", 0);
+		picture.downloadNumber = obj.optInt("download", 0);
+		picture.height = obj.optInt("height", 0);
+		picture.width = obj.optInt("width");
+		picture.user = mUser;
 		picture.setUrl(obj.optString("url", ""));
-		picture.setTitle(obj.optString("title", ""));
-		picture.setContent(obj.optString("content", ""));
-		picture.setCommentNumber(obj.optInt("comment_num", 0));
-		picture.setLikeNumber(obj.optInt("like", 0));
-		picture.setDownloadNumber(obj.optInt("download", 0));
-		picture.setHeight(obj.optInt("height", 0));
-		picture.setWidth(obj.optInt("width"));
 		mPictures.add(picture);
 	    }
 	} catch (Exception e) {
@@ -381,7 +382,7 @@ public class FragmentUser extends Fragment {
     public void onSuccessUpload(JSONObject json_data) {
 	DataPicture picture = new DataPicture();
 	try {
-	    picture.setId(json_data.getString("pid"));
+	    picture.id = json_data.getString("pid");
 	    picture.setUrl(json_data.getString("url"));
 	} catch (Exception e) {
 	    Log.e("MainActivity.http", "exception:" + e.toString());

@@ -16,88 +16,27 @@ public class DataPicture implements Parcelable {
 	 */
     private static final long serialVersionUID = 3059978754733451579L;
 
-    private String id = "";
-    private String title = "";
-    private String content = "";
-    private String url = "";
-    private String url_s = "";
-    private String url_m = "";
-    private int height = 0;
-    private int width = 0;
-    private int commentNumber = 0;
-    private int likeNumber = 0;
-    private int downloadNumber = 0;
-
+    public String id = "";
+    public String title = "";
+    public String content = "";
+    public String url = "";
+    public String url_s = "";
+    public String url_m = "";
+    public int height = 0;
+    public int width = 0;
+    public int commentNumber = 0;
+    public int likeNumber = 0;
+    public int downloadNumber = 0;
     public DataUser user = new DataUser();
     
-    public DataPicture() {
-	
-    }
 
-    public int getHeight() {
-	return height;
-    }
-
-    public void setHeight(int height) {
-	this.height = height;
-    }
-
-    public String getId() {
-	return id;
-    }
-
-    public void setId(String id) {
-	this.id = id;
-    }
-
-    public String getContent() {
-	return content;
-    }
-
-    public void setContent(String content) {
-	this.content = content;
-    }
-
-    public int getWidth() {
-	return width;
-    }
-
-    public void setWidth(int width) {
-	this.width = width;
+    public DataPicture() {	
     }
 
     public String getTitle() {
 	if ( title.length() > 0 )
 	    return title;
 	return "很喜欢的一张写真";
-    }
-
-    public void setTitle(String title) {
-	this.title = title;
-    }
-
-    public int getCommentNumber() {
-	return commentNumber;
-    }
-
-    public void setCommentNumber(int commentNumber) {
-	this.commentNumber = commentNumber;
-    }
-
-    public int getLikeNumber() {
-	return likeNumber;
-    }
-
-    public void setLikeNumber(int likeNumber) {
-	this.likeNumber = likeNumber;
-    }
-
-    public int getDownloadNumber() {
-	return downloadNumber;
-    }
-
-    public void setDownloadNumber(int downloadNumber) {
-	this.downloadNumber = downloadNumber;
     }
 
     private static final String[] tags = { "_s.", "_m.", "." };
@@ -115,18 +54,6 @@ public class DataPicture implements Parcelable {
 	url = s.substring(0, pos) + "." + s.substring(pos + tag.length());
 	url_s = s.substring(0, pos) + "_s." + s.substring(pos + tag.length());
 	url_m = s.substring(0, pos) + "_m." + s.substring(pos + tag.length());
-    }
-
-    public String getUrl() {
-	return url;
-    }
-
-    public String getSmallUrl() {
-	return url_s;
-    }
-
-    public String getMiddleUrl() {
-	return url_m;
     }
 
     @Override

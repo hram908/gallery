@@ -147,8 +147,8 @@ public class ActivityComment extends BasicActivity {
 	Http.With(mContext).get(G.Url.pictureComment(mPicture.getId()),
 		new JsonHttpResponseHandler() {
 		    @Override
-		    public void onSuccess(JSONObject json_root) {
-			doSuccessGetComments(json_root);
+		    public void onSuccess(JSONObject json_data) {
+			doSuccessGetComments(json_data);
 		    }
 		});
     }
@@ -207,10 +207,9 @@ public class ActivityComment extends BasicActivity {
 	});
     }
 
-    public void doSuccessGetComments(JSONObject json_root) {
+    public void doSuccessGetComments(JSONObject json_data) {
 	LinkedList<DataComment> comments = new LinkedList<DataComment>();
 	try {
-	    JSONObject json_data = json_root.getJSONObject("data");
 	    JSONArray json_comments = json_data.getJSONArray("comments");
 	    for (int i = 0; i < json_comments.length(); i++) {
 		JSONObject obj = json_comments.getJSONObject(i);

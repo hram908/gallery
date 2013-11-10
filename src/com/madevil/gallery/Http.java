@@ -86,7 +86,7 @@ public class Http {
     
     public void post(String url, RequestParams params, JsonHttpResponseHandler h) {
 	http.setCookieStore(share.http_cookies);
-	http.get(url, new RspWrapper(url, h));
+	http.post(url, params, new RspWrapper(url, h));
     }
 
 }

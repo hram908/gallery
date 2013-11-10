@@ -226,6 +226,7 @@ public class FragmentIndex extends Fragment {
 		picture.setDownloadNumber(obj.optInt("download", 0));
 		picture.setHeight(obj.optInt("height"));
 		picture.setWidth(obj.optInt("width"));
+		picture.user.id = obj.optString("user");
 		items.add(picture);
 	    }
 	} catch (Exception e) {

@@ -14,6 +14,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,8 +23,10 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -42,9 +45,10 @@ public class FragmentPicture extends Fragment {
 
     private Button mButtonLike, mButtonComment, mButtonDownload;
     private ImageView mButtonAvatar;
+    private TextView mTitle;
     private Context mContext;
     private ViewPager mViewPager;
-    private RelativeLayout mLayout;
+    private LinearLayout mLayout;
 
     public static FragmentPicture Ins(ArrayList<DataPicture> pictures, int index) {
 	FragmentPicture f = new FragmentPicture();
@@ -59,8 +63,8 @@ public class FragmentPicture extends Fragment {
 	View view = inflater.inflate(R.layout.fragment_picture, container,
 		false);
 	mContext = this.getActivity().getApplication();
-	mLayout = (RelativeLayout) view.findViewById(R.id.detail_bar_info);
-
+	mLayout = (LinearLayout) view.findViewById(R.id.detail_bar_info);
+	mTitle = (TextView) view.findViewById(R.id.fragment_picture_title);
 	mButtonLike = (Button) view.findViewById(R.id.detail_btn_like);
 	mButtonComment = (Button) view.findViewById(R.id.detail_btn_comment);
 	mButtonDownload = (Button) view.findViewById(R.id.detail_btn_download);
@@ -121,34 +125,39 @@ public class FragmentPicture extends Fragment {
 	    public void onPageSelected(int position) {
 		Log.d("ActivityDetail", "onPageSelected");
 		mPicture = mPictures.get(position);
-		int num = 0;
-
-		num = mPicture.getLikeNumber();
-		if (num > 0) {
-		    mButtonLike.setText(String.format("%s", num));
-		} else {
-		    mButtonLike.setText(R.string.t_like);
-		}
-
-		num = mPicture.getCommentNumber();
-		if (num > 0) {
-		    mButtonComment.setText(String.format("%s", num));
-		} else {
-		    mButtonComment.setText(R.string.t_comment);
-		}
-
-		mButtonDownload.setText(R.string.t_download);
-		loadPictureInfo(G.Url.pictureInfo(mPicture.getId()));
-		String url = G.Url.userAvatar(mUser.id);
-		Log.d("ActivityDetail", "avatar url=" + url);
-		Picasso.with(getActivity()).load(url).into(mButtonAvatar);
+		updateScreen();
 	    }
 	});
 
 	mPicture = mPictures.get(mIndex);
 	mViewPager.setCurrentItem(mIndex);
+	updateScreen();
 	hide();
 	return view;
+    }
+    
+    public void updateScreen() {
+	int num = mPicture.getLikeNumber();
+	if (num > 0) {
+	    mButtonLike.setText(String.format("%s", num));
+	} else {
+	    mButtonLike.setText(R.string.t_like);
+	}
+
+	num = mPicture.getCommentNumber();
+	if (num > 0) {
+	    mButtonComment.setText(String.format("%s", num));
+	} else {
+	    mButtonComment.setText(R.string.t_comment);
+	}
+
+	mButtonDownload.setText(R.string.t_download);
+	mTitle.setText(mPicture.getTitle());		
+	
+	loadPictureInfo(G.Url.pictureInfo(mPicture.getId()));
+	String url = G.Url.userAvatar(mPicture.user.id);
+	Log.i("picture", "avatar: " + url);
+	Picasso.with(getActivity()).load(url).into(mButtonAvatar);
     }
 
     public void loadPictureInfo(String url) {

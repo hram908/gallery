@@ -27,6 +27,8 @@ public class DataPicture implements Parcelable {
     private int commentNumber = 0;
     private int likeNumber = 0;
     private int downloadNumber = 0;
+
+    public DataUser user = new DataUser();
     
     public DataPicture() {
 	
@@ -65,7 +67,9 @@ public class DataPicture implements Parcelable {
     }
 
     public String getTitle() {
-	return title;
+	if ( title.length() > 0 )
+	    return title;
+	return "很喜欢的一张写真";
     }
 
     public void setTitle(String title) {
@@ -144,6 +148,7 @@ public class DataPicture implements Parcelable {
 	dest.writeInt(likeNumber);
 	dest.writeInt(commentNumber);
 	dest.writeInt(downloadNumber);
+	dest.writeParcelable(user, 0);
     }
 
     private DataPicture(Parcel in) {
@@ -158,6 +163,7 @@ public class DataPicture implements Parcelable {
 	likeNumber = in.readInt();
 	commentNumber = in.readInt();
 	downloadNumber = in.readInt();
+	user = in.readParcelable(DataUser.class.getClassLoader());
     }
 
     public static final Parcelable.Creator<DataPicture> CREATOR = new Parcelable.Creator<DataPicture>() {

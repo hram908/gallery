@@ -17,6 +17,7 @@
 package com.tonicartos.widget.stickygridheaders;
 
 import android.database.DataSetObserver;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -66,6 +67,18 @@ public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implement
     public long getItemId(int position) {
         return mDelegate.getItemId(position);
     }
+    
+    @Override
+    public int getItemViewType(int position) {
+	return mDelegate.getItemViewType(position);
+    }
+    
+    @Override
+    public int getViewTypeCount() {
+	return mDelegate.getViewTypeCount();
+    }
+
+
 
     @Override
     public int getNumHeaders() {

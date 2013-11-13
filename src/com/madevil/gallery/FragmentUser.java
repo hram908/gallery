@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.DataSetObserver;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -143,8 +144,7 @@ class UserPictureAdapter implements StickyGridHeadersSimpleAdapter {
 	ImageView image = (ImageView) view
 		.findViewById(R.id.component_picture_fixed_image);
 	image.setTag((Integer) index);
-	Picasso.with(parent.getContext()).load(picture.url_s)
-		.into(image);
+	Picasso.with(parent.getContext()).load(picture.url_s).into(image);
 	return view;
     }
 
@@ -280,6 +280,12 @@ public class FragmentUser extends Fragment {
 	mHeaderView = inflater.inflate(R.layout.component_user, container,
 		false);
 	View h = mHeaderView;
+	h.setOnClickListener(new OnClickListener() {
+	    @Override
+	    public void onClick(View v) {
+		startActivity(new Intent(Intent.ACTION_VIEW, G.Url.helpMoney()));
+	    }
+	});
 
 	// 读取用户信息
 	Log.i("UserActivity", "user_id=" + mUser.id + ", nick=" + mUser.nick);
@@ -312,6 +318,26 @@ public class FragmentUser extends Fragment {
 	Picasso.with(mContext).load(G.Url.userAvatar(mUser.id))
 		.into(mUserAvatar);
 
+	mButtonMoney.setClickable(true);
+	mButtonMoney.setOnClickListener(new OnClickListener() {
+	    @Override
+	    public void onClick(View v) {
+		Log.e("widget", "click");
+		startActivity(new Intent(Intent.ACTION_VIEW, G.Url.helpMoney()));
+	    }
+	});
+
+	TextView help = (TextView) h.findViewById(R.id.user_help);
+	help.getPaint().setFlags(Paint.UNDERLINE_TEXT_FLAG);
+	help.setClickable(true);
+	help.setOnClickListener(new OnClickListener() {
+	    @Override
+	    public void onClick(View v) {
+		Log.e("widget", "click");
+		startActivity(new Intent(Intent.ACTION_VIEW, G.Url.helpMoney()));
+	    }
+	});
+
 	// 异步发起读取用户信息的操作
 	updateScreenInfo();
 	getUserInfo();
@@ -341,7 +367,6 @@ public class FragmentUser extends Fragment {
 	    mUser.nick = json_data.optString("nick");
 	    mUser.intro = json_data.optString("intro", "");
 	    mUser.moneyNumber = json_data.optInt("money", 0);
-	    mUser.pictureNumber = json_data.optInt("pic_num", 0);
 
 	    JSONArray json_pics = json_data.getJSONArray("pics");
 	    for (int i = 0; i < json_pics.length(); i++) {
@@ -366,6 +391,11 @@ public class FragmentUser extends Fragment {
 	}
 	Toast.makeText(mContext, "loaded:" + mPictures.size(),
 		Toast.LENGTH_SHORT).show();
+	mUser.pictureNumber += mPictures.size();
+	if (mUser.id == share.user.id) {
+	    share.user = mUser;
+	}
+
 	updateScreenInfo();
 	mUserPictureAdapter.addItems(mPictures);
 	mUserPictureAdapter.notifyDataSetChanged();
@@ -375,8 +405,8 @@ public class FragmentUser extends Fragment {
     public void updateScreenInfo() {
 	mTextNick.setText(mUser.nick);
 	mTextIntro.setText(mUser.intro);
-	mButtonMoney.setText("" + mUser.moneyNumber);
-	mButtonPicture.setText("" + mUser.pictureNumber);
+	mButtonMoney.setText("" + mUser.moneyNumber + "秀点");
+	mButtonPicture.setText("" + mUser.pictureNumber + "图片");
     }
 
     public void onSuccessUpload(JSONObject json_data) {

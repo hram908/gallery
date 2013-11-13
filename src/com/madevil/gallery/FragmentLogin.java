@@ -69,6 +69,9 @@ public class FragmentLogin extends Fragment {
 		    share.user.avatar = json_data.optString("avatar", "");
 		    Log.d("ActivityMain", "login success!");
 		    ChangeFragmentUser();
+			Log.d("ActivityMain", "onStop(), dump DataShare.");
+			share.dump(getActivity().getSharedPreferences(ActivityMain.PREFS_NAME, 0));
+
 		} catch (Exception e) {
 		    share.is_login = false;
 		    String msg = "服务器数据错误，请重试登陆";

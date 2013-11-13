@@ -16,14 +16,12 @@ import com.loopj.android.http.RequestParams;
 public class Http {
     private DataShare share = null;
     private Context mContext = null;
-    private static AsyncHttpClient http = null;
-
+    private static AsyncHttpClient http = new AsyncHttpClient();
 
     public static Http With(Context c) {
 	Http h = new Http();
 	h.mContext = c;
 	h.share = DataShare.Ins(c);
-	h.http = new AsyncHttpClient();
 	return h;
     }
 

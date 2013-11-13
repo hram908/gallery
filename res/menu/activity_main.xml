@@ -37,12 +37,14 @@
             android:showAsAction="never"
             android:title="@string/menu_feedback">
         </item>
+        <!-- 
         <item
             android:id="@+id/menu_settings"
             android:orderInCategory="100"
             android:showAsAction="never"
             android:title="@string/menu_settings">
         </item>
+         -->
     </group>
 
 </menu>

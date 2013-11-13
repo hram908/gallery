@@ -9,6 +9,7 @@ import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -36,13 +37,11 @@ import com.squareup.picasso.Picasso;
 
 public class FragmentPicture extends Fragment {
     private DataUser mUser = new DataUser();
-    private Boolean mUserLiked = false;
-    private Boolean mUserCommented = false;
-    private Boolean mUserDownloaded = false;
 
     private int mIndex = 0;
     private DataPicture mPicture = null;
     private ArrayList<DataPicture> mPictures = null;
+    private DataShare share = null;
 
     private Button mButtonLike, mButtonComment, mButtonDownload;
     private ImageView mButtonAvatar;
@@ -65,6 +64,7 @@ public class FragmentPicture extends Fragment {
 	View view = inflater.inflate(R.layout.fragment_picture, container,
 		false);
 	mContext = this.getActivity().getApplication();
+	share = DataShare.Ins(mContext);
 	mLayout = (LinearLayout) view.findViewById(R.id.detail_bar_info);
 	mTitle = (TextView) view.findViewById(R.id.fragment_picture_title);
 	mButtonLike = (Button) view.findViewById(R.id.detail_btn_like);
@@ -168,9 +168,9 @@ public class FragmentPicture extends Fragment {
 	    @Override
 	    public void onSuccess(JSONObject obj) {
 		try {
-		    mUserLiked = obj.optBoolean("liked", false);
-		    mUserCommented = obj.optBoolean("commented", false);
-		    mUserDownloaded = obj.optBoolean("downloaded", false);
+		    mPicture.hasLike = obj.optBoolean("liked", false);
+		    mPicture.hasComment = obj.optBoolean("commented", false);
+		    mPicture.hasDownload = obj.optBoolean("downloaded", false);
 		    mUser.id = obj.getString("owner");
 		    Log.d("DetailActivity", "uesr_id=" + mUser.id);
 		} catch (Exception e) {
@@ -178,9 +178,9 @@ public class FragmentPicture extends Fragment {
 		    String msg = "服务器返回的数据无效";
 		    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 		}
-		mButtonLike.setPressed(mUserLiked);
-		mButtonComment.setPressed(mUserCommented);
-		mButtonDownload.setPressed(mUserDownloaded);
+		mButtonLike.setPressed(mPicture.hasLike);
+		mButtonComment.setPressed(mPicture.hasComment);
+		mButtonDownload.setPressed(mPicture.hasDownload);
 	    }
 	});
     }
@@ -195,7 +195,7 @@ public class FragmentPicture extends Fragment {
 	Log.d("http", "like url=" + url);
 	// do request
 	RequestParams params = new RequestParams();
-	if (mUserLiked) {
+	if (mPicture.hasLike) {
 	    params.put("like", "0");
 	} else {
 	    params.put("like", "1");
@@ -204,8 +204,8 @@ public class FragmentPicture extends Fragment {
 	    @Override
 	    public void onSuccess(JSONObject obj) {
 		lock_btn_like = false;
-		mUserLiked = !mUserLiked;
-		mButtonLike.setPressed(mUserLiked);
+		mPicture.hasLike = !mPicture.hasLike;
+		mButtonLike.setPressed(mPicture.hasLike);
 	    }
 
 	    @Override
@@ -216,11 +216,57 @@ public class FragmentPicture extends Fragment {
 	return;
     }
 
-    @SuppressLint("ResourceAsColor")
-    public void onClick_detail_btn_download(View v) {
-	if (!this.mUserDownloaded) {
-	}
+    private AlertDialog dialog;
 
+    public void onClick_detail_btn_download(View v) {
+	if (mPicture.hasDownload) {
+	    showOriginalPhoto();
+	    return;
+	}
+	DialogInterface.OnClickListener yes = new DialogInterface.OnClickListener() {
+	    @Override
+	    public void onClick(DialogInterface dialog, int which) {
+		String url = G.Url.doPictureDownload(mPicture.id);
+		RequestParams params = new RequestParams();
+		Http.With(mContext).post(url, params, new JsonHttpResponseHandler() {
+		    @Override
+		    public void onSuccess(JSONObject obj) {
+			mPicture.hasDownload = true;
+			mPicture.downloadNumber = 1;
+			share.user.moneyNumber -= 1;
+			showOriginalPhoto();
+		    }
+		});
+	    }
+	};
+	
+	int money = share.user.moneyNumber;
+	if ( money < 1 ) {
+	    new AlertDialog.Builder(v.getContext()).setTitle("查看高清大图")
+			.setMessage("高清大图需要消耗1个秀点，但您当前没有秀点了。")
+			.setNegativeButton("了解如何获得秀点", new DialogInterface.OnClickListener() {
+			    @Override
+			    public void onClick(DialogInterface dialog, int which) {
+				startActivity(new Intent(Intent.ACTION_VIEW, G.Url.helpMoney()));
+			    }
+			}).create().show();
+	    return;
+	}
+	dialog = new AlertDialog.Builder(v.getContext()).setTitle("查看高清大图")
+		.setMessage("高清大图需要消耗1个秀点，是否要查看呢？\n\n（您当前共有"+share.user.moneyNumber+"个秀点）")
+		.setPositiveButton("好的", yes)
+		.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+		    @Override
+		    public void onClick(DialogInterface dialog, int which) {
+			dialog.dismiss();
+		    }
+		}).create();
+	dialog.show();
+    }
+
+    @SuppressLint("ResourceAsColor")
+    public void showOriginalPhoto() {
+	Toast.makeText(mContext, "正在加载高清大图", Toast.LENGTH_LONG).show();
 	PhotoView photo = (PhotoView) mViewPager
 		.findViewById(R.id.fragment_picture);
 	photo.setBackgroundColor(R.color.transparent);

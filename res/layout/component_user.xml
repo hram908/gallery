@@ -3,60 +3,70 @@
     android:id="@+id/comment_activity"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical" >
+    android:layout_marginTop="16dp"
+    android:clickable="true"
+    android:padding="8dp" >
 
-        <ImageView
-            android:id="@+id/user_image_avatar"
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:src="@drawable/default_avatar" />
+    <ImageView
+        android:id="@+id/user_image_avatar"
+        android:layout_margin="8dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:src="@drawable/default_avatar" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="84dp"
+        android:layout_marginBottom="@dimen/padding_medium"
+        android:gravity="left"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/user_text_nick"
+            style="@style/Card.Footer.Text"
+            android:text="@string/t_user_nick"
+            android:textSize="@dimen/font_size_large" />
 
         <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="72dp"
-            android:gravity="center|bottom"
-            android:orientation="vertical" >
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="left" >
+
+            <Button
+                android:id="@+id/user_btn_picture"
+                style="@style/Card.Footer.Button"
+                android:drawableLeft="@drawable/button_image"
+                android:minHeight="@dimen/font_size_small"
+                android:text="123" />
+
+            <Button
+                android:id="@+id/user_btn_money"
+                style="@style/Card.Footer.Button"
+                android:drawableLeft="@drawable/button_money"
+                android:minHeight="@dimen/font_size_small"
+                android:text="456" />
 
             <TextView
-                android:id="@+id/user_text_nick"
+                android:id="@+id/user_help"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/t_user_nick"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:clickable="true"
+                android:minHeight="@dimen/font_size_small"
+                android:text="@string/t_help_money"
+                android:textColor="@color/text_secondary"
+                android:textSize="@dimen/font_size_small" />
 
-            <TextView
-                android:id="@+id/user_text_intro"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:gravity="center"
-                android:text="@string/t_user_intro"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center" >
-
-                <Button
-                    android:id="@+id/user_btn_picture"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#00000000"
-                    android:drawableLeft="@drawable/button_image"
-                    android:paddingRight="16dp"
-                    android:text="123" />
-
-                <Button
-                    android:id="@+id/user_btn_money"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="#00000000"
-                    android:drawableLeft="@drawable/button_money"
-                    android:paddingLeft="16dp"
-                    android:text="456" />
-            </LinearLayout>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/user_text_intro"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:text="@string/t_user_intro"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+    </LinearLayout>
 
 </LinearLayout>

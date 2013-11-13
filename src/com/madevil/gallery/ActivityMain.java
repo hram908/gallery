@@ -27,7 +27,7 @@ import com.viewpagerindicator.TabPageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
 public class ActivityMain extends BasicActivity {
-    public final String PREFS_NAME = "cache";
+    public final static String PREFS_NAME = "cache";
     private ViewAdapter mViewAdapter = null;
     private ViewPager mPager = null;
     private DataShare share = null;

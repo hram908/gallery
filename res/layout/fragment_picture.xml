@@ -66,8 +66,7 @@
                     android:id="@+id/detail_btn_like"
                     style="@style/Card.Footer.Button"
                     android:drawableLeft="@drawable/button_like"
-                    android:text="@string/t_like"
-                    android:textColor="@color/text_secondary" />
+                    android:text="@string/t_like"/>
 
                 <Button
                     android:id="@+id/detail_btn_comment"

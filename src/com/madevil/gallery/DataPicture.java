@@ -28,7 +28,9 @@ public class DataPicture implements Parcelable {
     public int likeNumber = 0;
     public int downloadNumber = 0;
     public DataUser user = new DataUser();
-    
+    public Boolean hasLike = false;
+    public Boolean hasComment = false;
+    public Boolean hasDownload = false;
 
     public DataPicture() {	
     }
@@ -75,6 +77,9 @@ public class DataPicture implements Parcelable {
 	dest.writeInt(likeNumber);
 	dest.writeInt(commentNumber);
 	dest.writeInt(downloadNumber);
+	dest.writeInt(hasLike?1:0);
+	dest.writeInt(hasComment?1:0);
+	dest.writeInt(hasDownload?1:0);
 	dest.writeParcelable(user, 0);
     }
 
@@ -90,6 +95,9 @@ public class DataPicture implements Parcelable {
 	likeNumber = in.readInt();
 	commentNumber = in.readInt();
 	downloadNumber = in.readInt();
+	hasLike = in.readInt() > 0;
+	hasComment = in.readInt() > 0;
+	hasDownload = in.readInt() > 0;
 	user = in.readParcelable(DataUser.class.getClassLoader());
     }
 

@@ -4,8 +4,10 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,7 +32,7 @@ import com.madevil.gallery.ActivityMain.Callback;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.UiError;
 
-public class FragmentLogin extends Fragment {
+public class FragmentLogin extends TrackedFragment {
     private Context mContext = null;
     private TextView mMsg = null;
     private ImageView mButtonLoginQQ = null;
@@ -53,38 +55,40 @@ public class FragmentLogin extends Fragment {
      */
     public void LoginUser() {
 	Activity act = this.getActivity();
-	mDialog = ProgressDialog.show(act, "正在登陆", "登陆中，请稍后……", true, false);
+	mDialog = ProgressDialog.show(act, "", "登陆中，请稍后……", true, false);
 
 	RequestParams params = new RequestParams();
 	params.put("login_info", share.login_info);
 
 	BasicClientCookie cookie = new BasicClientCookie("user", share.user.id);
 	share.http_cookies.addCookie(cookie);
-	Http.With(mContext).post(G.Url.doLogin(), params, new JsonHttpResponseHandler() {
-	    @Override
-	    public void onSuccess(JSONObject json_data) {
-		mDialog.dismiss();
-		try {
-		    share.user.nick = json_data.getString("nick");
-		    share.user.avatar = json_data.optString("avatar", "");
-		    Log.d("ActivityMain", "login success!");
-		    ChangeFragmentUser();
-			Log.d("ActivityMain", "onStop(), dump DataShare.");
-			share.dump(getActivity().getSharedPreferences(ActivityMain.PREFS_NAME, 0));
+	Http.With(mContext).post(G.Url.doLogin(), params,
+		new JsonHttpResponseHandler() {
+		    @Override
+		    public void onSuccess(JSONObject json_data) {
+			mDialog.dismiss();
+			try {
+			    share.user.nick = json_data.getString("nick");
+			} catch (Exception e) {
+			    share.is_login = false;
+			    String msg = "服务器数据错误，请重试登陆";
+			    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT)
+				    .show();
+			    return;
+			}
+			share.user.avatar = "";
+			share.dump(getActivity().getSharedPreferences(
+				ActivityMain.PREFS_NAME, 0));
+			Log.d("ActivityMain", "login success!");
+			ChangeFragmentUser();
 
-		} catch (Exception e) {
-		    share.is_login = false;
-		    String msg = "服务器数据错误，请重试登陆";
-		    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-		    return;
-		}
-	    }
+		    }
 
-	    public void onFailure(Throwable e, String response) {
-		mDialog.dismiss();
-		share.is_login = false;
-	    }
-	});
+		    public void onFailure(Throwable e, String response) {
+			mDialog.dismiss();
+			share.is_login = false;
+		    }
+		});
     }
 
     public void LoginByQQ() {
@@ -148,13 +152,28 @@ public class FragmentLogin extends Fragment {
 	Log.d("DataShare", "login_msg=" + share.login_info);
 
 	View view = inflater.inflate(R.layout.fragment_login, container, false);
-	mMsg = (TextView) view.findViewById(R.id.login_text_msg);
-	mMsg.setText(share.login_info);
 	mButtonLoginQQ = (ImageView) view.findViewById(R.id.login_btn_qq);
 	mButtonLoginQQ.setOnClickListener(new OnClickListener() {
 	    @Override
 	    public void onClick(View arg0) {
 		LoginByQQ();
+	    }
+	});
+
+	ImageView btn = (ImageView) view.findViewById(R.id.login_btn_weibo);
+	btn.setOnClickListener(new OnClickListener() {
+	    @Override
+	    public void onClick(View v) {
+		new AlertDialog.Builder(getActivity())
+			.setMessage("暂不支持微博登陆，敬请期待")
+			.setNegativeButton("好的",
+				new DialogInterface.OnClickListener() {
+				    @Override
+				    public void onClick(DialogInterface dialog,
+					    int which) {
+					dialog.dismiss();
+				    }
+				}).create().show();
 	    }
 	});
 	return view;

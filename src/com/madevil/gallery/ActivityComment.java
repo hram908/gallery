@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -129,6 +130,7 @@ public class ActivityComment extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.activity_comment);
+	this.setTitle("0条评论");
 	this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	mContext = this.getApplicationContext();
 	share = DataShare.Ins(mContext);
@@ -225,6 +227,7 @@ public class ActivityComment extends BasicActivity {
 	    e.printStackTrace();
 	    Log.e("ActivityComment", "get comments fail");
 	}
+	this.setTitle(comments.size()+"条评论");
 	mAdapter.addItems(comments);
 	mAdapter.notifyDataSetChanged();
 

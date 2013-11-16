@@ -210,8 +210,9 @@ class UserPictureAdapter implements StickyGridHeadersSimpleAdapter {
 
 }
 
-public class FragmentUser extends Fragment {
-    public static final int REQCODE_UPLOAD_IMAGE = 2;
+public class FragmentUser extends TrackedFragment {
+    public static final int REQCODE_SELECT_IMAGE = 2;
+    public static final int REQCODE_UPLOAD_IMAGE = 3;
     private DataShare share = null;
     private DataUser mUser = new DataUser();
     private UserPictureAdapter mUserPictureAdapter = null;
@@ -225,25 +226,22 @@ public class FragmentUser extends Fragment {
     private ImageView mUserAvatar = null;
     private View mHeaderView = null;
 
-    public String getGalleryPath(Uri uri) {
-	String[] projection = { MediaStore.Images.Media.DATA };
-	Cursor cursor = mContext.getContentResolver().query(uri, projection,
-		null, null, null);
-	if (cursor == null)
-	    return null;
-	int column_index = cursor
-		.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-	cursor.moveToFirst();
-	return cursor.getString(column_index);
-    }
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
 	switch (requestCode) {
+	case REQCODE_SELECT_IMAGE:
+	    if (resultCode == Activity.RESULT_OK) {
+		Intent intent = new Intent(data);
+		intent.setClass(getActivity(), ActivityUpload.class);
+		startActivityForResult(intent, REQCODE_UPLOAD_IMAGE);
+	    }
+	    break;
 	case REQCODE_UPLOAD_IMAGE:
 	    if (resultCode == Activity.RESULT_OK) {
-		Uri uri = data.getData();
-		doUpload(uri);
+		DataPicture picture = data.getParcelableExtra("picture");
+		picture.user = mUser;
+		mUserPictureAdapter.addFirst(picture);
+		mUserPictureAdapter.notifyDataSetChanged();
 	    }
 	    break;
 	default:
@@ -390,7 +388,8 @@ public class FragmentUser extends Fragment {
 	    String msg = "服务器返回的数据无效";
 	    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	}
-	//Toast.makeText(mContext, "loaded:" + mPictures.size(), Toast.LENGTH_SHORT).show();
+	// Toast.makeText(mContext, "loaded:" + mPictures.size(),
+	// Toast.LENGTH_SHORT).show();
 	mUser.pictureNumber += mPictures.size();
 	if (mUser.id == share.user.id) {
 	    share.user = mUser;
@@ -399,8 +398,8 @@ public class FragmentUser extends Fragment {
 	updateScreenInfo();
 	mUserPictureAdapter.addItems(mPictures);
 	mUserPictureAdapter.notifyDataSetChanged();
-	
-	return 	json_data.optInt("last_page", 0);
+
+	return json_data.optInt("last_page", 0);
     }
 
     public void updateScreenInfo() {
@@ -410,78 +409,12 @@ public class FragmentUser extends Fragment {
 	mButtonPicture.setText("" + mUser.pictureNumber + "图片");
     }
 
-    public void onSuccessUpload(JSONObject json_data) {
-	DataPicture picture = new DataPicture();
-	try {
-	    picture.id = json_data.getString("pid");
-	    picture.setUrl(json_data.getString("url"));
-	    picture.user = mUser;
-	} catch (Exception e) {
-	    Log.e("MainActivity.http", "exception:" + e.toString());
-	    String msg = "服务器返回的数据无效";
-	    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
-	}
-	mUserPictureAdapter.addFirst(picture);
-	mUserPictureAdapter.notifyDataSetChanged();
-	Toast.makeText(mContext, "上传成功", Toast.LENGTH_SHORT).show();
-    }
-
     public void doSelectImage() {
 	Intent intent = new Intent();
 	intent.setType("image/*");
 	intent.setAction(Intent.ACTION_GET_CONTENT);
 	startActivityForResult(Intent.createChooser(intent, "Select Picture"),
-		REQCODE_UPLOAD_IMAGE);
-    }
-
-    public void doUpload(Uri selectedImageUri) {
-	mDialog = ProgressDialog.show(mContext, "正在上传", "图片正在上传中……", true,
-		false);
-	String filePath = null;
-	try {
-	    // OI FILE Manager
-	    String filemanagerstring = selectedImageUri.getPath();
-
-	    // MEDIA GALLERY
-	    String gallery_media = getGalleryPath(selectedImageUri);
-	    if (gallery_media != null) {
-		filePath = gallery_media;
-	    } else if (filemanagerstring != null) {
-		filePath = filemanagerstring;
-	    } else {
-		Toast.makeText(mContext, "Unknown path", Toast.LENGTH_LONG)
-			.show();
-		Log.e("Bitmap", "Unknown path");
-	    }
-	    Log.d("image", "filepath=" + filePath);
-
-	    RequestParams params = new RequestParams();
-	    params.put("title", "no title");
-	    params.put("width", "7000");
-	    params.put("height", "7000");
-	    params.put("file", new File(filePath));
-	    Http.With(mContext).post(G.Url.doUpload(), params,
-		    new JsonHttpResponseHandler() {
-			@Override
-			public void onSuccess(JSONObject json_data) {
-			    mDialog.dismiss();
-			    onSuccessUpload(json_data);
-			}
-
-			@Override
-			public void onFailure(Throwable e, String response) {
-			    mDialog.dismiss();
-			    new AlertDialog.Builder(mContext).setTitle("很抱歉")
-				    .setMessage("很抱歉，图片上传失败了～\n请稍后再次尝试")
-				    .create().show();
-			}
-
-		    });
-	} catch (Exception e) {
-	    Toast.makeText(mContext, "Internal error", Toast.LENGTH_LONG)
-		    .show();
-	    Log.e(e.getClass().getName(), e.getMessage(), e);
-	}
+		REQCODE_SELECT_IMAGE);
 
     }
 

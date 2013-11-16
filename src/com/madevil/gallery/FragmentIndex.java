@@ -111,7 +111,7 @@ class PictureAdapter extends BaseAdapter {
     }
 }
 
-public class FragmentIndex extends Fragment {
+public class FragmentIndex extends TrackedFragment {
     private PictureAdapter mAdapter;
     private StaggeredGridView mGridView;
     private Context mContext;

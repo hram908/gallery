@@ -18,9 +18,6 @@ public class ActivityDetail extends BasicActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 	switch (item.getItemId()) {
-	case android.R.id.home:
-	    NavUtils.navigateUpFromSameTask(this);
-	    return true;
 	default:
 	    return mFragment.onOptionsItemSelected(item);
 	}
@@ -31,9 +28,7 @@ public class ActivityDetail extends BasicActivity {
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
 	getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-
 	getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-	DataShare share = DataShare.Ins(getApplicationContext());
 	
 	int index = getIntent().getIntExtra(DataPicture.intentIndex, 0);
 	ArrayList<DataPicture> pictures = getIntent().getParcelableArrayListExtra(DataPicture.intentPictures);	
@@ -41,13 +36,17 @@ public class ActivityDetail extends BasicActivity {
 	
         mFragment = FragmentPicture.Ins(pictures, index);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(android.R.id.content, mFragment).commit();
+        ft.replace(android.R.id.content, mFragment).commit();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-	// Inflate the menu; this adds items to the action bar if it is present.
+	Log.i("menu", "building menu");
 	getMenuInflater().inflate(R.menu.activity_detail, menu);
+	if (mFragment != null && mFragment.isOwner() == false) {
+	    Log.i("menu", "remove delete menu");
+	    menu.removeItem(R.id.menu_delete);
+	}
 	return true;
     }
 

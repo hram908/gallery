@@ -10,7 +10,7 @@ import android.widget.ListView;
 import com.umeng.newxp.controller.ExchangeDataService;
 import com.umeng.newxp.view.ExchangeViewManager;
 
-public class FragmentFeeds extends Fragment {
+public class FragmentFeeds extends TrackedFragment {
     private Context mContext;
 
     @Override

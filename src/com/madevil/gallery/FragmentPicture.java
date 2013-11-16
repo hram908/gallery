@@ -7,12 +7,14 @@ import org.json.JSONObject;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher.OnPhotoTapListener;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -37,7 +39,7 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;
 
-public class FragmentPicture extends Fragment {
+public class FragmentPicture extends TrackedFragment {
     private DataUser mUser = new DataUser();
 
     private int mIndex = 0;
@@ -53,9 +55,12 @@ public class FragmentPicture extends Fragment {
     private LinearLayout mLayout;
     private PicturePagerAdapter mAdapter;
 
+    private ArrayList<DataPicture> mDelete = new ArrayList<DataPicture>();
+
     public static FragmentPicture Ins(ArrayList<DataPicture> pictures, int index) {
 	FragmentPicture f = new FragmentPicture();
 	f.mPictures = pictures;
+	f.mPicture = pictures.get(index);
 	f.mIndex = index;
 	return f;
     }
@@ -64,30 +69,65 @@ public class FragmentPicture extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
 	switch (item.getItemId()) {
 	case R.id.menu_delete:
-	    deletePicture();
+	    new AlertDialog.Builder(getActivity())
+		    .setMessage("你要删除这张写真吗？")
+		    .setPositiveButton(R.string.d_delete_yes,
+			    new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog,
+					int which) {
+				    deletePicture();
+				}
+			    })
+		    .setNegativeButton(R.string.d_delete_no,
+			    new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog,
+					int which) {
+				    dialog.dismiss();
+				}
+			    }).create().show();
+	    return true;
+	case android.R.id.home:
+	    finishFragment();
 	    return true;
 	default:
 	    return super.onOptionsItemSelected(item);
 	}
     }
+    
+    public void finishFragment() {
+	    FragmentActivity activity = this.getActivity();
+	    if (mDelete.size() == 0) {
+		activity.setResult(Activity.RESULT_CANCELED);
+		activity.finish();
+	    } else {
+		Intent intent = new Intent();
+		intent.putParcelableArrayListExtra("delete", mDelete);
+		activity.setResult(Activity.RESULT_OK, intent);
+	    }
+    }
 
     public void deletePicture() {
 	RequestParams params = new RequestParams();
-	Http.With(getActivity()).post(G.Url.doPictureDelete(mPicture.id), params,
-		new JsonHttpResponseHandler() {
+	Http.With(getActivity()).post(G.Url.doPictureDelete(mPicture.id),
+		params, new JsonHttpResponseHandler() {
 		    @Override
 		    public void onSuccess(JSONObject obj) {
 			int len = mPictures.size() - 1;
 			if (len < 1) {
-			    NavUtils.navigateUpFromSameTask(getActivity());
+			    finishFragment();
+			    return;
 			}
 			int i = mViewPager.getCurrentItem();
 			if (i >= len) {
 			    i = len - 1;
 			}
-			mViewPager.setCurrentItem(i);
 			mPictures.remove(mPicture);
+			mViewPager.setCurrentItem(i);
 			mAdapter.notifyDataSetChanged();
+			Toast.makeText(getActivity(), "删除成功",
+				Toast.LENGTH_SHORT).show();
 		    }
 		});
 	return;
@@ -174,6 +214,11 @@ public class FragmentPicture extends Fragment {
 	return view;
     }
 
+    public boolean isOwner() {
+	return mPicture.user.id.compareTo(share.user.id) == 0;
+    }
+
+    @SuppressLint("NewApi")
     public void updateScreen() {
 	int num = mPicture.likeNumber;
 	if (num > 0) {
@@ -196,6 +241,9 @@ public class FragmentPicture extends Fragment {
 	String url = G.Url.userAvatar(mPicture.user.id);
 	Log.i("picture", "avatar: " + url);
 	Picasso.with(getActivity()).load(url).into(mButtonAvatar);
+
+	// update menu
+	this.getActivity().invalidateOptionsMenu();
     }
 
     public void loadPictureInfo(String url) {
@@ -279,7 +327,6 @@ public class FragmentPicture extends Fragment {
 	int money = share.user.moneyNumber;
 	if (money < 1) {
 	    new AlertDialog.Builder(v.getContext())
-		    .setTitle("查看高清大图")
 		    .setMessage("高清大图需要消耗1个秀点，但您当前没有秀点了。")
 		    .setNegativeButton("了解如何获得秀点",
 			    new DialogInterface.OnClickListener() {
@@ -294,7 +341,6 @@ public class FragmentPicture extends Fragment {
 	    return;
 	}
 	dialog = new AlertDialog.Builder(v.getContext())
-		.setTitle("查看高清大图")
 		.setMessage(
 			"高清大图需要消耗1个秀点，是否要查看呢？\n\n（您当前共有"
 				+ share.user.moneyNumber + "个秀点）")

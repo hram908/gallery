@@ -47,7 +47,9 @@
                 android:value="com.madevil.gallery.ActivityMain" />
         </activity>
         <activity
+            android:windowSoftInputMode="stateHidden"
             android:name="com.madevil.gallery.ActivityComment"
+            android:theme="@style/AppTheme.SlideInFromBottom"
             android:label="@string/title_activity_comment" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -88,6 +90,14 @@
             android:exported="true"
             android:process=":DownloadingService" >
         </service>
+
+        <activity
+            android:name="com.madevil.gallery.ActivityUpload"
+            android:label="@string/title_activity_upload" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.madevil.gallery.ActivityMain" />
+        </activity>
     </application>
 
 </manifest>

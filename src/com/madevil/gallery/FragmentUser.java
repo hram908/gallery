@@ -352,7 +352,7 @@ public class FragmentUser extends Fragment {
 	Http.With(mContext).get(url, new JsonHttpResponseHandler() {
 	    @Override
 	    public void onSuccess(JSONObject obj) {
-		if (onSuccessGetUser(obj) > 0) {
+		if (onSuccessGetUser(obj) == 0) {
 		    mPage += 1;
 		    getUserInfo();
 		}
@@ -360,6 +360,7 @@ public class FragmentUser extends Fragment {
 	});
     }
 
+    /* 返回值表示是否加载完最后一页 */
     public int onSuccessGetUser(JSONObject json_data) {
 	List<DataPicture> mPictures = new ArrayList<DataPicture>();
 
@@ -389,8 +390,7 @@ public class FragmentUser extends Fragment {
 	    String msg = "服务器返回的数据无效";
 	    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	}
-	Toast.makeText(mContext, "loaded:" + mPictures.size(),
-		Toast.LENGTH_SHORT).show();
+	//Toast.makeText(mContext, "loaded:" + mPictures.size(), Toast.LENGTH_SHORT).show();
 	mUser.pictureNumber += mPictures.size();
 	if (mUser.id == share.user.id) {
 	    share.user = mUser;
@@ -399,7 +399,8 @@ public class FragmentUser extends Fragment {
 	updateScreenInfo();
 	mUserPictureAdapter.addItems(mPictures);
 	mUserPictureAdapter.notifyDataSetChanged();
-	return mPictures.size();
+	
+	return 	json_data.optInt("last_page", 0);
     }
 
     public void updateScreenInfo() {
@@ -414,6 +415,7 @@ public class FragmentUser extends Fragment {
 	try {
 	    picture.id = json_data.getString("pid");
 	    picture.setUrl(json_data.getString("url"));
+	    picture.user = mUser;
 	} catch (Exception e) {
 	    Log.e("MainActivity.http", "exception:" + e.toString());
 	    String msg = "服务器返回的数据无效";

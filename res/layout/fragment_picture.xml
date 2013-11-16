@@ -55,6 +55,7 @@
             <TextView
                 android:id="@+id/fragment_picture_title"
                 style="@style/Card.Footer.Text"
+                android:layout_gravity="center"
                 android:text="pincture title" />
 
             <LinearLayout

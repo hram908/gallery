@@ -93,9 +93,8 @@ class PictureAdapter extends BaseAdapter {
 	DataPicture picture = share.pictures.get(index);
 	int height = picture.height * mItemWidth / picture.width;
 	int width = LayoutParams.MATCH_PARENT;
-	Log.d("FragmentIndex",
-		"height=" + height + ", orig height=" + picture.height
-			+ ", item width=" + mItemWidth);
+	Log.d("FragmentIndex", "height=" + height + ", orig height="
+		+ picture.height + ", item width=" + mItemWidth);
 	ViewHolder holder = (ViewHolder) view.getTag();
 	holder.imageView.setLayoutParams(new LayoutParams(width, height));
 	Context c = parent.getContext();
@@ -191,26 +190,26 @@ public class FragmentIndex extends Fragment {
 	mItemWidth = mItemWidth / mGridView.getColumnCount() + 2;
 	mAdapter = new PictureAdapter(mContext, mItemWidth);
 	mGridView.setAdapter(mAdapter);
+	mAdapter.clear();
 	mAdapter.notifyDataSetChanged();
 
-	if (share.pictures_json.length() == 0) {
-	    loadmore();
-	} else {
-	    try {
-		JSONObject json_data = new JSONObject(share.pictures_json);
-		LoadJson(json_data);
-	    } catch (Exception e) {
-		e.printStackTrace();
-		Log.e("FragmentIndex", "Load index picture from cache fail");
-		loadmore();
-	    }
+	try {
+	    JSONObject json_data = new JSONObject(share.pictures_json);
+	    LoadJson(json_data);
+	} catch (Exception e) {
+	    e.printStackTrace();
+	    Log.e("FragmentIndex", "Load index picture from cache fail");
 	}
+	loadmore();
 
 	return view;
     }
 
     private void LoadJson(JSONObject json_data) {
+	Log.d("data", "loadJson()");
 	List<DataPicture> items = new ArrayList<DataPicture>();
+	items.clear();
+
 	try {
 	    JSONArray json_pics = json_data.getJSONArray("pics");
 	    for (int i = 0; i < json_pics.length(); i++) {
@@ -233,8 +232,11 @@ public class FragmentIndex extends Fragment {
 	    String msg = "服务器返回的数据无效";
 	    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
 	}
-	
-	if (items.size() == 0) {
+
+	int last_page = json_data.optInt("last_page", 0);
+	Log.i("data", "loadJson items="+items.size());
+	Log.i("data", "last_page=" + last_page);
+	if (items.size() == 0 || last_page > 0) {
 	    // all finish
 	    mFooter.findViewById(R.id.component_loading_progress)
 		    .setVisibility(View.INVISIBLE);
@@ -242,6 +244,7 @@ public class FragmentIndex extends Fragment {
 		    .findViewById(R.id.component_loading_text);
 	    t.setText(R.string.t_load_done);
 	}
+
 	if (mReload) {
 	    mAdapter.clear();
 	    mReload = false;
@@ -258,6 +261,7 @@ public class FragmentIndex extends Fragment {
     }
 
     private void loadmore() {
+	Log.d("data", "loadmore()");
 	String url = G.Url.index(mPage);
 	Http.With(mContext).get(url, new JsonHttpResponseHandler() {
 	    @Override

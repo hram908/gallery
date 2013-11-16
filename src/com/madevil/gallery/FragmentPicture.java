@@ -13,12 +13,14 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -56,6 +58,39 @@ public class FragmentPicture extends Fragment {
 	f.mPictures = pictures;
 	f.mIndex = index;
 	return f;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+	switch (item.getItemId()) {
+	case R.id.menu_delete:
+	    deletePicture();
+	    return true;
+	default:
+	    return super.onOptionsItemSelected(item);
+	}
+    }
+
+    public void deletePicture() {
+	RequestParams params = new RequestParams();
+	Http.With(getActivity()).post(G.Url.doPictureDelete(mPicture.id), params,
+		new JsonHttpResponseHandler() {
+		    @Override
+		    public void onSuccess(JSONObject obj) {
+			int len = mPictures.size() - 1;
+			if (len < 1) {
+			    NavUtils.navigateUpFromSameTask(getActivity());
+			}
+			int i = mViewPager.getCurrentItem();
+			if (i >= len) {
+			    i = len - 1;
+			}
+			mViewPager.setCurrentItem(i);
+			mPictures.remove(mPicture);
+			mAdapter.notifyDataSetChanged();
+		    }
+		});
+	return;
     }
 
     @Override
@@ -228,32 +263,41 @@ public class FragmentPicture extends Fragment {
 	    public void onClick(DialogInterface dialog, int which) {
 		String url = G.Url.doPictureDownload(mPicture.id);
 		RequestParams params = new RequestParams();
-		Http.With(mContext).post(url, params, new JsonHttpResponseHandler() {
-		    @Override
-		    public void onSuccess(JSONObject obj) {
-			mPicture.hasDownload = true;
-			mPicture.downloadNumber = 1;
-			share.user.moneyNumber -= 1;
-			showOriginalPhoto();
-		    }
-		});
+		Http.With(mContext).post(url, params,
+			new JsonHttpResponseHandler() {
+			    @Override
+			    public void onSuccess(JSONObject obj) {
+				mPicture.hasDownload = true;
+				mPicture.downloadNumber = 1;
+				share.user.moneyNumber -= 1;
+				showOriginalPhoto();
+			    }
+			});
 	    }
 	};
-	
+
 	int money = share.user.moneyNumber;
-	if ( money < 1 ) {
-	    new AlertDialog.Builder(v.getContext()).setTitle("查看高清大图")
-			.setMessage("高清大图需要消耗1个秀点，但您当前没有秀点了。")
-			.setNegativeButton("了解如何获得秀点", new DialogInterface.OnClickListener() {
-			    @Override
-			    public void onClick(DialogInterface dialog, int which) {
-				startActivity(new Intent(Intent.ACTION_VIEW, G.Url.helpMoney()));
-			    }
-			}).create().show();
+	if (money < 1) {
+	    new AlertDialog.Builder(v.getContext())
+		    .setTitle("查看高清大图")
+		    .setMessage("高清大图需要消耗1个秀点，但您当前没有秀点了。")
+		    .setNegativeButton("了解如何获得秀点",
+			    new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog,
+					int which) {
+				    startActivity(new Intent(
+					    Intent.ACTION_VIEW, G.Url
+						    .helpMoney()));
+				}
+			    }).create().show();
 	    return;
 	}
-	dialog = new AlertDialog.Builder(v.getContext()).setTitle("查看高清大图")
-		.setMessage("高清大图需要消耗1个秀点，是否要查看呢？\n\n（您当前共有"+share.user.moneyNumber+"个秀点）")
+	dialog = new AlertDialog.Builder(v.getContext())
+		.setTitle("查看高清大图")
+		.setMessage(
+			"高清大图需要消耗1个秀点，是否要查看呢？\n\n（您当前共有"
+				+ share.user.moneyNumber + "个秀点）")
 		.setPositiveButton("好的", yes)
 		.setNegativeButton("取消", new DialogInterface.OnClickListener() {
 		    @Override

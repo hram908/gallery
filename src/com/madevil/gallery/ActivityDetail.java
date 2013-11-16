@@ -13,6 +13,8 @@ import android.view.Window;
 
 
 public class ActivityDetail extends BasicActivity {
+    FragmentPicture mFragment = null;
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 	switch (item.getItemId()) {
@@ -20,7 +22,7 @@ public class ActivityDetail extends BasicActivity {
 	    NavUtils.navigateUpFromSameTask(this);
 	    return true;
 	default:
-	    return super.onOptionsItemSelected(item);
+	    return mFragment.onOptionsItemSelected(item);
 	}
     }
 
@@ -37,9 +39,9 @@ public class ActivityDetail extends BasicActivity {
 	ArrayList<DataPicture> pictures = getIntent().getParcelableArrayListExtra(DataPicture.intentPictures);	
 	Log.d("ActivityDetail", "pictures.size=" + pictures.size() + ", index=" + index);
 	
-        FragmentPicture f = FragmentPicture.Ins(pictures, index);
+        mFragment = FragmentPicture.Ins(pictures, index);
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.add(android.R.id.content, f).commit();
+        ft.add(android.R.id.content, mFragment).commit();
     }
 
     @Override

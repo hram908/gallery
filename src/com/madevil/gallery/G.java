@@ -5,7 +5,7 @@ import android.net.Uri;
 import com.loopj.android.http.AsyncHttpClient;
 
 public class G {
-    public static final String HOST = "http://talebook.org:8000";
+    public static final String HOST = "http://app.talebook.org";
 
     public static class Url {
 	public static String index(int page_id) {
@@ -31,6 +31,10 @@ public class G {
 	/*
 	 * 写操作
 	 */
+	public static String doPictureDelete(String picture_id) {
+	    return HOST + "/pic/" + picture_id + "/delete";
+	}
+	
 	public static String doPictureLike(String picture_id) {
 	    return HOST + "/pic/" + picture_id + "/like";
 	}

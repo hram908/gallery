@@ -78,11 +78,13 @@ public class Http {
     }
 
     public void get(String url, JsonHttpResponseHandler h) {
+	Log.d("http", "GET: "+url);
 	http.setCookieStore(share.http_cookies);
 	http.get(url, new RspWrapper(url, h));
     }
     
     public void post(String url, RequestParams params, JsonHttpResponseHandler h) {
+	Log.d("http", "POST: "+url);
 	http.setCookieStore(share.http_cookies);
 	http.post(url, params, new RspWrapper(url, h));
     }

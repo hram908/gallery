@@ -1,16 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
     <android.support.v4.view.ViewPager
         android:id="@+id/main_layout_pager"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
+        android:layout_weight="1"
         android:gravity="center"
         android:orientation="vertical" >
     </android.support.v4.view.ViewPager>
+
+    <com.google.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        ads:adSize="BANNER"
+        ads:adUnitId="a15286782e9dccd"
+        ads:loadAdOnCreate="true"
+        ads:testDevices="TEST_EMULATOR, 8703E0B700B073F852C09512FD6993C2" />
 
 </RelativeLayout>

@@ -1,20 +1,18 @@
 package com.madevil.gallery;
 
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher.OnRefreshListener;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.extras.actionbarcompat.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -62,6 +60,7 @@ class PictureAdapter extends BaseAdapter {
 	return position;
     }
 
+    @SuppressLint("InlinedApi")
     @Override
     public View getView(int index, View view, ViewGroup parent) {
 	if (view == null) {
@@ -118,16 +117,10 @@ public class FragmentIndex extends TrackedFragment {
     private DataShare share = null;
     private int mPage = 0;
     private boolean mReload = false;
-    private PullToRefreshAttacher mPullToRefreshAttacher;
     private View mFooter = null;
     private int mItemWidth = 0;
-
-    public static FragmentIndex Instance(PullToRefreshAttacher a) {
-	FragmentIndex f = new FragmentIndex();
-	f.mPullToRefreshAttacher = a;
-	return f;
-    }
-
+    private PullToRefreshLayout ptrLayout;
+    
     @SuppressLint("NewApi")
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -140,6 +133,7 @@ public class FragmentIndex extends TrackedFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
 	switch (item.getItemId()) {
 	case R.id.menu_refresh:
+	    ptrLayout.setRefreshing(true);
 	    refresh();
 	    return true;
 	default:
@@ -147,23 +141,26 @@ public class FragmentIndex extends TrackedFragment {
 	}
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
 	    Bundle savedInstanceState) {
 	View view = inflater.inflate(R.layout.fragment_index, container, false);
 
 	// 下拉刷新
-	PullToRefreshLayout ptrLayout = (PullToRefreshLayout) view
+	ptrLayout = (PullToRefreshLayout) view
 		.findViewById(R.id.ptr_layout);
-	ptrLayout.setPullToRefreshAttacher(mPullToRefreshAttacher,
-		new OnRefreshListener() {
+	ActionBarPullToRefresh.from(getActivity())
+		.allChildrenArePullable()
+		.useViewDelegate(StaggeredGridView.class, new StaggeredGridViewDelegate())
+		.listener(new OnRefreshListener() {
 		    @Override
 		    public void onRefreshStarted(View view) {
-			// TODO Auto-generated method stub
 			Log.e("Refersh", "loading");
 			refresh();
 		    }
-		});
+		})
+		.setup(ptrLayout);
 
 	// 全局参数
 	mContext = this.getActivity().getApplication();
@@ -234,7 +231,7 @@ public class FragmentIndex extends TrackedFragment {
 	}
 
 	int last_page = json_data.optInt("last_page", 0);
-	Log.i("data", "loadJson items="+items.size());
+	Log.i("data", "loadJson items=" + items.size());
 	Log.i("data", "last_page=" + last_page);
 	if (items.size() == 0 || last_page > 0) {
 	    // all finish
@@ -266,8 +263,7 @@ public class FragmentIndex extends TrackedFragment {
 	Http.With(mContext).get(url, new JsonHttpResponseHandler() {
 	    @Override
 	    public void onSuccess(JSONObject json_data) {
-		if (mPullToRefreshAttacher != null)
-		    mPullToRefreshAttacher.setRefreshComplete();
+		ptrLayout.setRefreshComplete();
 		if (mPage == 0) {
 		    share.pictures_json = json_data.toString();
 		}
@@ -276,8 +272,7 @@ public class FragmentIndex extends TrackedFragment {
 
 	    @Override
 	    public void onFailure(Throwable e, String response) {
-		if (mPullToRefreshAttacher != null)
-		    mPullToRefreshAttacher.setRefreshComplete();
+		ptrLayout.setRefreshComplete();
 	    }
 	});
     }

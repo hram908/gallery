@@ -11,19 +11,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -34,7 +28,6 @@ import com.tencent.tauth.UiError;
 
 public class FragmentLogin extends TrackedFragment {
     private Context mContext = null;
-    private TextView mMsg = null;
     private ImageView mButtonLoginQQ = null;
     private DataShare share = null;
     private Callback mCallback = null;
@@ -97,7 +90,6 @@ public class FragmentLogin extends TrackedFragment {
 	share.tencent.login(act, G.TENCENT_APIS, new IUiListener() {
 	    @Override
 	    public void onCancel() {
-		// TODO Auto-generated method stub
 		Log.d("Login", "onCancel");
 	    }
 

@@ -2,8 +2,6 @@ package com.madevil.gallery;
 
 import android.net.Uri;
 
-import com.loopj.android.http.AsyncHttpClient;
-
 public class G {
     public static final String HOST = "http://app.talebook.org";
 

@@ -1,25 +1,15 @@
 package com.madevil.gallery;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-
-import org.apache.http.cookie.Cookie;
-import org.json.JSONObject;
-
-import com.loopj.android.http.PersistentCookieStore;
-import com.tencent.tauth.Tencent;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Parcel;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+
+import com.loopj.android.http.PersistentCookieStore;
+import com.tencent.tauth.Tencent;
 
 public class DataShare implements Serializable {
     /**

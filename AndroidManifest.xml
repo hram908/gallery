@@ -47,10 +47,10 @@
                 android:value="com.madevil.gallery.ActivityMain" />
         </activity>
         <activity
-            android:windowSoftInputMode="stateHidden"
             android:name="com.madevil.gallery.ActivityComment"
+            android:label="@string/title_activity_comment"
             android:theme="@style/AppTheme.SlideInFromBottom"
-            android:label="@string/title_activity_comment" >
+            android:windowSoftInputMode="stateHidden" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.madevil.gallery.ActivityDetail" />

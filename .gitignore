@@ -1,20 +1,36 @@
-# built application files
-*.apk
-*.ap_
+#Android generated
+bin
+gen
+gen*
 
-# files for the dex VM
-*.dex
+#Eclipse
+.project
+.classpath
+.settings
 
-# Java class files
-*.class
+#IntelliJ IDEA
+.idea
+*.iml
+*.ipr
+*.iws
+out
 
-# generated files
-bin/
-gen/
+#Maven
+target
+release.properties
+pom.xml.*
 
-# Local configuration file (sdk path, etc)
+#Ant
+build.xml
 local.properties
+proguard.cfg
 
-# Eclipse project files
-#.classpath
-#.project
+#Gradle
+.gradle
+build
+
+#OSX
+.DS_Store
+
+#Personal Files
+signing.properties

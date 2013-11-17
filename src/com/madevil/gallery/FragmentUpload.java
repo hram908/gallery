@@ -14,13 +14,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.NavUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -32,7 +30,6 @@ import com.squareup.picasso.Picasso;
 
 public class FragmentUpload extends TrackedFragment {
     public static final int REQCODE_UPLOAD_IMAGE = 2;
-    private DataShare share = null;
     private TextView mText = null;
     private Button mButtonSend, mButtonCancel;
     private Context mContext = null;
@@ -47,7 +44,6 @@ public class FragmentUpload extends TrackedFragment {
 	View view = inflater
 		.inflate(R.layout.fragment_upload, container, false);
 	mContext = view.getContext();
-	share = DataShare.Ins(mContext);
 
 	mText = (TextView) view.findViewById(R.id.upload_text);
 	mImage = (ImageView) view.findViewById(R.id.upload_image);

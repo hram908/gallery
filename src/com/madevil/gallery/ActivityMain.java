@@ -1,6 +1,5 @@
 package com.madevil.gallery;
 
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshAttacher;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
@@ -12,20 +11,16 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 
-import com.squareup.picasso.Picasso;
-import com.umeng.analytics.MobclickAgent;
 import com.umeng.fb.FeedbackAgent;
 import com.viewpagerindicator.TabPageIndicator;
-import com.viewpagerindicator.TitlePageIndicator;
 
+@SuppressLint("DefaultLocale")
 public class ActivityMain extends BasicActivity {
     public final static String PREFS_NAME = "cache";
     private ViewAdapter mViewAdapter = null;
@@ -33,15 +28,14 @@ public class ActivityMain extends BasicActivity {
     private DataShare share = null;
     private ActionBar mBar = null;
     private Context mContext = null;
-    private PullToRefreshAttacher mPullToRefreshAttacher;
-
 
     private boolean onPageritemSelected(MenuItem item) {
-	    Fragment f = mViewAdapter.getItem(mPager.getCurrentItem());
-	    Log.d("MainActivity", "calling fragment=" + f.getClass().getName());
-	    return f.onOptionsItemSelected(item);
-	
+	Fragment f = mViewAdapter.getItem(mPager.getCurrentItem());
+	Log.d("MainActivity", "calling fragment=" + f.getClass().getName());
+	return f.onOptionsItemSelected(item);
+
     }
+
     @SuppressLint("NewApi")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -98,13 +92,10 @@ public class ActivityMain extends BasicActivity {
     @SuppressLint("NewApi")
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-	Log.d("MainActivity", "onActivityResult()");
 	super.onActivityResult(requestCode, resultCode, data);
 	Fragment f = mViewAdapter.getItem(mPager.getCurrentItem());
-	Log.d("MainActivity", "calling fragment=" + f.getClass().getName());
 	f.onActivityResult(requestCode, resultCode, data);
 	invalidateOptionsMenu();
-	// share.tencent.onActivityResult(requestCode, resultCode, data);
     }
 
     @SuppressLint("NewApi")
@@ -117,13 +108,11 @@ public class ActivityMain extends BasicActivity {
 	mBar = getSupportActionBar();
 	mContext = getApplicationContext();
 	share = DataShare.Ins(mContext);
-    // Create a PullToRefreshAttacher instance
-    mPullToRefreshAttacher = PullToRefreshAttacher.get(this);
 
 	// Restore preferences
 	Log.d("ActivityMain", "onCreate(), load DataShare");
 	share.load(getSharedPreferences(PREFS_NAME, 0));
-	//Picasso.with(mContext).setDebugging(true);
+	// Picasso.with(mContext).setDebugging(true);
 
 	mViewAdapter = new ViewAdapter(getSupportFragmentManager());
 	mPager = (ViewPager) findViewById(R.id.main_layout_pager);
@@ -199,7 +188,6 @@ public class ActivityMain extends BasicActivity {
 	@Override
 	public void onTabUnselected(Tab arg0,
 		android.support.v4.app.FragmentTransaction arg1) {
-	    // TODO Auto-generated method stub
 	}
     }
 
@@ -218,7 +206,7 @@ public class ActivityMain extends BasicActivity {
 
 	public ViewAdapter(FragmentManager fm) {
 	    super(fm);
-	    mFragmentIndex = FragmentIndex.Instance(mPullToRefreshAttacher);
+	    mFragmentIndex = new FragmentIndex();
 	    mFragmentFeeds = new FragmentFeeds();
 	    mFragmentLogin = FragmentLogin.Instance(new Callback() {
 		public void call() {
@@ -255,11 +243,13 @@ public class ActivityMain extends BasicActivity {
 	    return POSITION_UNCHANGED;
 	}
 
-	private final String[] CONTENT = new String[] { "动态", "浏览", "我" };
+	private final String[] CONTENT = new String[] {
+		getString(R.string.tab_feeds), getString(R.string.tab_index),
+		getString(R.string.tab_user) };
 
 	@Override
 	public CharSequence getPageTitle(int position) {
-	    return CONTENT[position % CONTENT.length].toUpperCase();
+	    return CONTENT[position % CONTENT.length];
 	}
 
 	@Override

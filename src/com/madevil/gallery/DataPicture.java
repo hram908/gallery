@@ -1,20 +1,12 @@
 package com.madevil.gallery;
 
-import java.io.Serializable;
-
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.util.Log;
 
 public class DataPicture implements Parcelable {
     public static final String intent = "com.madevil.DataPicture.object";
     public static final String intentPictures = "com.madevil.DataPicture.pictures";
     public static final String intentIndex = "com.madevil.DataPicture.pictures.index";
-
-    /**
-	 *
-	 */
-    private static final long serialVersionUID = 3059978754733451579L;
 
     public String id = "";
     public String title = "";

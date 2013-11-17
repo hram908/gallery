@@ -36,7 +36,7 @@
     <string name="d_delete_yes">删除</string>
     <string name="d_delete_no">保留</string>
     <string name="d_upload_ing">图片正在上传中……</string>
-    <string name="tab_feeds">动态</string>
+    <string name="tab_feeds">推荐</string>
     <string name="tab_index">浏览</string>
     <string name="tab_user">我　</string>
 

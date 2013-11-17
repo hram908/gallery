@@ -57,6 +57,9 @@ public class ActivityMain extends BasicActivity {
 	    FeedbackAgent agent = new FeedbackAgent(this);
 	    agent.startFeedbackActivity();
 	    return true;
+	case R.id.menu_upload:
+	    mPager.setCurrentItem(ViewAdapter.ITEM_LOGIN);
+	    return true;
 	case R.id.menu_refresh:
 	    mPager.setCurrentItem(ViewAdapter.ITEM_INDEX);
 	    return this.onPageritemSelected(item);

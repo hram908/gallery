@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.madevil.gallery"
-    android:versionCode="20131110"
-    android:versionName="0.98" >
+    android:versionCode="20131118"
+    android:versionName="0.99" >
 
     <uses-sdk
         android:minSdkVersion="7"

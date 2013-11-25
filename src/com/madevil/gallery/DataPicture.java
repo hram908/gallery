@@ -45,9 +45,13 @@ public class DataPicture implements Parcelable {
 		break;
 	    }
 	}
-	url = s.substring(0, pos) + "." + s.substring(pos + tag.length());
+	//url = s.substring(0, pos) + "." + s.substring(pos + tag.length());
 	url_s = s.substring(0, pos) + "_s." + s.substring(pos + tag.length());
 	url_m = s.substring(0, pos) + "_m." + s.substring(pos + tag.length());
+    }
+    
+    public void setOriginalUrl(String s) {
+	url = s;
     }
 
     @Override

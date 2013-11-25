@@ -8,10 +8,9 @@
         android:id="@+id/upload_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10"
+        android:layout_marginTop="8dp"
         android:hint="描述一下吧"
-        android:inputType="textMultiLine"
-        android:lines="2" >
+        android:inputType="textMultiLine" >
 
         <requestFocus />
     </EditText>
@@ -23,6 +22,7 @@
 
         <Button
             android:id="@+id/upload_cancel"
+            style="@style/Custom.Button.Close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
@@ -33,15 +33,14 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:orientation="vertical" >
-
         </LinearLayout>
 
         <Button
             android:id="@+id/upload_send"
+            style="@style/Custom.Button.Douban.Green"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/t_upload_send" />
-
     </LinearLayout>
 
     <LinearLayout
@@ -53,8 +52,8 @@
 
         <ImageView
             android:id="@+id/upload_image"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_width="300dp"
+            android:layout_height="300dp"
             android:src="@drawable/default_avatar" />
     </LinearLayout>
 

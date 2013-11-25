@@ -3,6 +3,8 @@ package com.madevil.gallery;
 import java.io.Serializable;
 import java.util.LinkedList;
 
+import org.apache.http.impl.cookie.BasicClientCookie;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
@@ -27,7 +29,9 @@ public class DataShare implements Serializable {
     public int picture_index;
 
     public LinkedList<DataPicture> pictures = new LinkedList<DataPicture>();
-    //public LinkedList<DataPicture> pictures_user = new LinkedList<DataPicture>();
+
+    // public LinkedList<DataPicture> pictures_user = new
+    // LinkedList<DataPicture>();
 
     private DataShare(Context c) {
 	tencent = Tencent.createInstance(G.TENCENT_APPID, c);
@@ -61,6 +65,7 @@ public class DataShare implements Serializable {
 	user.nick = settings.getString("user.nick", user.nick);
 	user.avatar = settings.getString("user.avatar", user.avatar);
 	pictures_json = settings.getString("pictures_json", pictures_json);
+
 	Log.d("DataShare", "load is_login=" + is_login);
     }
 
@@ -69,6 +74,7 @@ public class DataShare implements Serializable {
     public static DataShare Ins(Context c) {
 	if (mIns == null) {
 	    mIns = new DataShare(c);
+
 	}
 	return mIns;
     }

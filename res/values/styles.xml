@@ -77,4 +77,32 @@
         <item name="android:layout_centerVertical">true</item>
     </style>
 
+    <style name="Custom" />
+
+    <style name="Custom.Button" parent="@style/Custom" />
+
+    <style name="Custom.Button.Close" parent="@style/Custom.Button.Douban.Gray" />
+
+    <style name="Custom.Button.Douban" parent="@style/Custom.Button">
+        <item name="android:textSize">@dimen/font_size_medium</item>
+        <item name="android:gravity">center</item>
+        <item name="android:padding">@dimen/padding_large</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minWidth">@dimen/prefered_button_width</item>
+        <item name="android:minHeight">@dimen/prefered_button_height</item>
+    </style>
+
+    <style name="Custom.Button.Douban.Gray" parent="@style/Custom.Button.Douban">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:background">@drawable/btn_douban_gray</item>
+    </style>
+
+    <style name="Custom.Button.Douban.Green" parent="@style/Custom.Button.Douban">
+        <item name="android:textColor">@color/text_primary_reverse</item>
+        <item name="android:background">@drawable/btn_douban_green</item>
+    </style>
+
+    <style name="Custom.Button.Follow" parent="@style/Custom.Button.Douban.Gray" />
+
 </resources>

@@ -24,7 +24,7 @@ public class ActivityUpload extends BasicActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
-	setContentView(R.layout.activity_main);
+	setContentView(R.layout.activity_upload);
 	//getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 	
         mFragment = new FragmentUpload();

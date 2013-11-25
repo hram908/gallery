@@ -2,6 +2,7 @@ package com.madevil.gallery;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
@@ -13,8 +14,6 @@ import android.view.Window;
  * @see SystemUiHider
  */
 public class ActivitySplash extends Activity {
-    private final int SPLASH_DISPLAY_LENGHT = 3000; // 延迟三秒
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
@@ -27,6 +26,10 @@ public class ActivitySplash extends Activity {
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
 	super.onPostCreate(savedInstanceState);
+	int timeout = 3000; // 3s
+	if ( Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+	    timeout = 5000; // 0.5s
+	}
 	new Handler().postDelayed(new Runnable() {
 	    @Override
 	    public void run() {
@@ -36,7 +39,7 @@ public class ActivitySplash extends Activity {
 		overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
 		finish();
 	    }
-	}, SPLASH_DISPLAY_LENGHT);
+	}, timeout);
     }
 
 }

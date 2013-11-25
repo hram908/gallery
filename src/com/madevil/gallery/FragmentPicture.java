@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -239,7 +240,7 @@ public class FragmentPicture extends TrackedFragment {
 	Picasso.with(getActivity()).load(url).into(mButtonAvatar);
 
 	// update menu
-	this.getActivity().invalidateOptionsMenu();
+	ActivityCompat.invalidateOptionsMenu(getActivity());
     }
 
     public void loadPictureInfo(String url) {
@@ -296,6 +297,10 @@ public class FragmentPicture extends TrackedFragment {
     }
 
     private AlertDialog dialog;
+    
+    private void loadAndShow() {
+	
+    }
 
     public void onClick_detail_btn_download(View v) {
 	if (mPicture.hasDownload) {
@@ -314,6 +319,7 @@ public class FragmentPicture extends TrackedFragment {
 				mPicture.hasDownload = true;
 				mPicture.downloadNumber = 1;
 				share.user.moneyNumber -= 1;
+				mPicture.setOriginalUrl(obj.optString("url"));
 				showOriginalPhoto();
 			    }
 			});

@@ -30,7 +30,7 @@
 
         <Button
             android:id="@+id/comment_btn_send"
-            style="?android:attr/buttonStyleSmall"
+            style="@style/Custom.Button.Douban.Green"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

@@ -2,7 +2,7 @@ Gallery
 ============
 a simple test app
 
-Just try to use these:
+Just try to use these great libs:
 
     * ActionBar-PullToRefresh-0.9
     * Android-Support-v7-Appcompat

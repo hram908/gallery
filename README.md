@@ -1,16 +1,13 @@
-MadEvil Gallery
+Gallery
 ============
-a simple app
+a simple test app
 
-Http API
-============
-/index/new/[page]
-/index/hot/[page]
-/me/[page]
-/me/upload
-/picture/[id]/like
-/picture/[id]/comment
-/picture/[id]/download
-/picture/[id]/info
-/picture/[id]/[width]
+Just try to use these:
+
+    * ActionBar-PullToRefresh-0.9
+    * Android-Support-v7-Appcompat
+    * PhotoView
+    * StaggeredGridView
+    * StickyGridHeaders-1.0.1
+    * ViewPagerIndicator
 

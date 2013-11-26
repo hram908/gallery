@@ -1,4 +1,4 @@
-package com.madevil.gallery;
+package com.evilmadhacker.gallery;
 
 import uk.co.senab.actionbarpulltorefresh.library.viewdelegates.ViewDelegate;
 import android.view.View;

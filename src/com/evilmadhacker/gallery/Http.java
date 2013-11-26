@@ -1,4 +1,4 @@
-package com.madevil.gallery;
+package com.evilmadhacker.gallery;
 
 import java.io.IOException;
 import java.net.UnknownHostException;

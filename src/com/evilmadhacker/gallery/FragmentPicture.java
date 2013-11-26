@@ -1,4 +1,4 @@
-package com.madevil.gallery;
+package com.evilmadhacker.gallery;
 
 import java.util.ArrayList;
 
@@ -32,6 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.evilmadhacker.gallery.R;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.squareup.picasso.Picasso;

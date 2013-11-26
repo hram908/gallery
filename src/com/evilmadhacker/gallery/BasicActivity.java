@@ -1,4 +1,4 @@
-package com.madevil.gallery;
+package com.evilmadhacker.gallery;
 
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;

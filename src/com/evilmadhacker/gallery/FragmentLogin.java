@@ -1,4 +1,4 @@
-package com.madevil.gallery;
+package com.evilmadhacker.gallery;
 
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.json.JSONObject;
@@ -20,9 +20,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.evilmadhacker.gallery.R;
+import com.evilmadhacker.gallery.ActivityMain.Callback;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
-import com.madevil.gallery.ActivityMain.Callback;
 import com.tencent.tauth.IUiListener;
 import com.tencent.tauth.UiError;
 

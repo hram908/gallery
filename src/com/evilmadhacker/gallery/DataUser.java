@@ -1,4 +1,4 @@
-package com.madevil.gallery;
+package com.evilmadhacker.gallery;
 
 import android.os.Parcel;
 import android.os.Parcelable;

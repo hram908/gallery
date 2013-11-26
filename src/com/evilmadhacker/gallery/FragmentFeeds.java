@@ -1,10 +1,11 @@
-package com.madevil.gallery;
+package com.evilmadhacker.gallery;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.evilmadhacker.gallery.R;
 import com.umeng.newxp.controller.ExchangeDataService;
 import com.umeng.newxp.view.ExchangeViewManager;
 

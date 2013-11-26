@@ -1,10 +1,11 @@
-package com.madevil.gallery;
+package com.evilmadhacker.gallery;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import com.evilmadhacker.gallery.R;
 
 
 public class ActivityUpload extends BasicActivity {

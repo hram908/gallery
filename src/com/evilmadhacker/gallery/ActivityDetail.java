@@ -1,4 +1,4 @@
-package com.madevil.gallery;
+package com.evilmadhacker.gallery;
 
 import java.util.ArrayList;
 
@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
+import com.evilmadhacker.gallery.R;
 
 
 public class ActivityDetail extends BasicActivity {

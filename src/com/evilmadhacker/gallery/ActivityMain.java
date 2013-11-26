@@ -1,4 +1,4 @@
-package com.madevil.gallery;
+package com.evilmadhacker.gallery;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -17,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.evilmadhacker.gallery.R;
 import com.umeng.fb.FeedbackAgent;
 import com.viewpagerindicator.TabPageIndicator;
 

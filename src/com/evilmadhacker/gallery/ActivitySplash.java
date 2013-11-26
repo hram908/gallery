@@ -1,4 +1,4 @@
-package com.madevil.gallery;
+package com.evilmadhacker.gallery;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -6,6 +6,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
+import com.evilmadhacker.gallery.R;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
